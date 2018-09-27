@@ -1,2 +1,2 @@
-# Senior_Design_Game
-FPS/RTS Game
+# Project Flashpoint
+A strategic FPS/RTS Game built on Unreal Engine 4
