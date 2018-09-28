@@ -1,4 +1,4 @@
-// Copyright 1998-2018 Epic Games, Inc. All Rights Reserved.
+// Copywrite 2018 Project Flashpoint. All rights reserved.
 
 #pragma once 
 
@@ -7,6 +7,8 @@
 #include "ProjectFlashpointHUD.generated.h"
 
 UCLASS()
+/** Basic HUD for Project Flashpoint
+*/
 class AProjectFlashpointHUD : public AHUD
 {
 	GENERATED_BODY()
@@ -14,12 +16,12 @@ class AProjectFlashpointHUD : public AHUD
 public:
 	AProjectFlashpointHUD();
 
-	/** Primary draw call for the HUD */
+	// Primary draw call for the HUD
 	virtual void DrawHUD() override;
 
 private:
-	/** Crosshair asset pointer */
-	class UTexture2D* CrosshairTex;
+	// Crosshair asset pointer
+	class UTexture2D* crosshairTex;
 
 };
 

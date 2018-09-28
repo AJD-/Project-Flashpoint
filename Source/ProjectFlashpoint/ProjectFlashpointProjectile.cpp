@@ -1,26 +1,35 @@
-// Copyright 1998-2018 Epic Games, Inc. All Rights Reserved.
+// Copywrite 2018 Project Flashpoint. All rights reserved.
 
 #include "ProjectFlashpointProjectile.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Components/SphereComponent.h"
 
-AProjectFlashpointProjectile::AProjectFlashpointProjectile() 
-{
+/** Default generated projectile fired from 
+ * {@link ProjectFlashpointCharacter#vr_Gun VR_GUN}
+*/
+AProjectFlashpointProjectile::AProjectFlashpointProjectile() {
 	// Use a sphere as a simple collision representation
-	CollisionComp = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComp"));
+	CollisionComp = CreateDefaultSubobject<USphereComponent>(
+		TEXT("SphereComp"));
 	CollisionComp->InitSphereRadius(5.0f);
 	CollisionComp->BodyInstance.SetCollisionProfileName("Projectile");
-	CollisionComp->OnComponentHit.AddDynamic(this, &AProjectFlashpointProjectile::OnHit);		// set up a notification for when this component hits something blocking
+
+	// set up a notification for when this component hits something blocking
+	CollisionComp->OnComponentHit.AddDynamic(this, 
+		&AProjectFlashpointProjectile::onHit);	
 
 	// Players can't walk on it
-	CollisionComp->SetWalkableSlopeOverride(FWalkableSlopeOverride(WalkableSlope_Unwalkable, 0.f));
+	CollisionComp->SetWalkableSlopeOverride(
+		FWalkableSlopeOverride(WalkableSlope_Unwalkable, 0.f));
 	CollisionComp->CanCharacterStepUpOn = ECB_No;
 
 	// Set as root component
 	RootComponent = CollisionComp;
 
 	// Use a ProjectileMovementComponent to govern this projectile's movement
-	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileComp"));
+	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(
+		TEXT("ProjectileComp")
+		);
 	ProjectileMovement->UpdatedComponent = CollisionComp;
 	ProjectileMovement->InitialSpeed = 3000.f;
 	ProjectileMovement->MaxSpeed = 3000.f;
@@ -31,12 +40,17 @@ AProjectFlashpointProjectile::AProjectFlashpointProjectile()
 	InitialLifeSpan = 3.0f;
 }
 
-void AProjectFlashpointProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
-{
+/**
+*/
+void AProjectFlashpointProjectile::onHit(UPrimitiveComponent* HitComp, 
+	AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, 
+	const FHitResult& Hit) {
 	// Only add impulse and destroy projectile if we hit a physics
-	if ((OtherActor != NULL) && (OtherActor != this) && (OtherComp != NULL) && OtherComp->IsSimulatingPhysics())
-	{
-		OtherComp->AddImpulseAtLocation(GetVelocity() * 100.0f, GetActorLocation());
+	if ((OtherActor != NULL) && (OtherActor != this) && (OtherComp != NULL) && 
+		OtherComp->IsSimulatingPhysics()) {
+		OtherComp->AddImpulseAtLocation(GetVelocity() * 100.0f, 
+			GetActorLocation()
+		);
 
 		Destroy();
 	}

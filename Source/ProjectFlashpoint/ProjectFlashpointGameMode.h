@@ -1,4 +1,4 @@
-// Copyright 1998-2018 Epic Games, Inc. All Rights Reserved.
+// Copywrite 2018 Project Flashpoint. All rights reserved.
 
 #pragma once
 
@@ -7,6 +7,8 @@
 #include "ProjectFlashpointGameMode.generated.h"
 
 UCLASS(minimalapi)
+/** Basic gamemode for Project Flashpoint
+*/
 class AProjectFlashpointGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
