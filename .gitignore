@@ -45,6 +45,7 @@
 *.VC.opendb
 
 # Precompiled Assets
+Content/StarterContent/
 SourceArt/**/*.png
 SourceArt/**/*.tga
 
@@ -75,3 +76,6 @@ Plugins/*/Intermediate/*
 
 # Cache files for the editor to use
 DerivedDataCache/*
+
+# Mac Specific ignores
+.DS_Store
