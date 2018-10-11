@@ -12,8 +12,10 @@
 #include "CoreMinimal.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/InputComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "GameFramework/Character.h"
+#include "../Weapons/Weapon.h"
 #include "Soldier.generated.h"
 
 UCLASS()
@@ -23,9 +25,12 @@ class PROJECTFLASHPOINT_API ASoldier : public ACharacter
 
 public:
 
-	// Pawn mesh: 1st person view (arms; seen only by self) 
 	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
 	class USkeletalMeshComponent* meshSoldier;
+
+	// Pawn mesh: 1st person view (arms; seen only by self) 
+	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
+	class USkeletalMeshComponent* firstPersonMeshSoldier;
 
 	// First person camera 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta =
@@ -78,5 +83,22 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	/** Handles moving forward / backward */
+	void moveForward(float value);
+
+	/** Handles stafing movement, left and right */
+	void moveRight(float value);
+
+	/** Called via input to turn at a given rate.
+	 * @param Rate	This is a normalized rate
+	 */
+	void turnAtRate(float rate);
+
+	/** Called via input to turn look up/down at a given rate.
+	 * @param Rate	This is a normalized rate
+	 */
+	void lookUpAtRate(float rate);
+
 private:
+	AWeapon* weapon = nullptr;
 };

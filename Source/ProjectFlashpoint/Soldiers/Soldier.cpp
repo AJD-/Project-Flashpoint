@@ -4,11 +4,16 @@
 
 
 // Sets default values
-ASoldier::ASoldier()
-{
+ASoldier::ASoldier() {
 	// Set size for collision capsule
-	GetCapsuleComponent()->InitCapsuleSize(55.f, 96.0f);
+	GetCapsuleComponent()->InitCapsuleSize(32.5f, 90.0f);
 
+	USkeletalMeshComponent* mesh = GetMesh();
+	mesh->SetRelativeLocation(FVector(0.0f, -5.0f, -90.0f));
+	mesh->SetRelativeRotation(FRotator(0.0f, 0.0f, -90.0f));
+
+
+/******************** First Person Orientation Setup ****************************/
 	// Create a CameraComponent	
 	firstPersonCameraComponent = CreateDefaultSubobject<UCameraComponent>(
 		TEXT("FirstPersonCamera"));
@@ -16,39 +21,94 @@ ASoldier::ASoldier()
 
 	// Position the camera
 	firstPersonCameraComponent->RelativeLocation =
-		FVector(-39.56f, 1.75f, 64.f);
+		FVector(-39.5f, 1.75f, 64.f);
 	firstPersonCameraComponent->bUsePawnControlRotation = true;
 
 	// Create a mesh component that will be used when being viewed from a 
 	//  '1st person' view (when controlling this pawn)
-	meshSoldier = CreateDefaultSubobject<USkeletalMeshComponent>(
-		TEXT("CharacterMesh1P"));
-	meshSoldier->SetOnlyOwnerSee(true);
-	meshSoldier->SetupAttachment(firstPersonCameraComponent);
-	meshSoldier->bCastDynamicShadow = false;
-	meshSoldier->CastShadow = false;
-	meshSoldier->RelativeRotation = FRotator(1.9f, -19.19f, 5.2f);
-	meshSoldier->RelativeLocation = FVector(-0.5f, -4.4f, -155.7f);
+	firstPersonMeshSoldier = CreateDefaultSubobject<USkeletalMeshComponent>(
+		TEXT("FirstPersonMeshSoldier"));
+	firstPersonMeshSoldier->SetOnlyOwnerSee(true);
+	firstPersonMeshSoldier->SetupAttachment(firstPersonCameraComponent);
+	firstPersonMeshSoldier->bCastDynamicShadow = false;
+	firstPersonMeshSoldier->CastShadow = false;
+	firstPersonMeshSoldier->SetRelativeLocation(
+		FVector(-0.5f, -4.4f, -155.7f)
+	);
+	firstPersonMeshSoldier->SetRelativeRotation(FRotator(1.9f, -19.19f, 5.2f));
 }
 
 // Called when the game starts or when spawned
-void ASoldier::BeginPlay()
-{
+void ASoldier::BeginPlay() {
 	Super::BeginPlay();
+
+//	weapon = GetWorld()->SpawnActor<AWeapon>(weaponBlueprint);
+//	weapon->AttachToComponent(firstPersonMeshSoldier, FAttachmentTransformRules(
+//		EAttachmentRule::SnapToTarget, true), TEXT("GripPoint")
+//	);
+
+	UE_LOG(LogTemp, Warning, TEXT("Spwaning Gun"));
 	
 }
 
 // Called every frame
-void ASoldier::Tick(float DeltaTime)
-{
+void ASoldier::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);
 
 }
 
 // Called to bind functionality to input
-void ASoldier::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
+void ASoldier::SetupPlayerInputComponent(
+	UInputComponent* playerInputComponent) {
+	// set up gameplay key bindings
+	check(playerInputComponent);
+
+	// Bind jump events
+	playerInputComponent->BindAction("Jump", IE_Pressed, this,
+		&ACharacter::Jump);
+	playerInputComponent->BindAction("Jump", IE_Released, this,
+		&ACharacter::StopJumping);
+
+	// Bind movement events
+	playerInputComponent->BindAxis("MoveForward", this,
+		&ASoldier::moveForward);
+	playerInputComponent->BindAxis("MoveRight", this,
+		&ASoldier::moveRight);
+
+	// We have 2 versions of the rotation bindings to handle different kinds of devices differently
+	// "turn" handles devices that provide an absolute delta, such as a mouse.
+	// "turnrate" is for devices that we choose to treat as a rate of change, such as an analog joystick
+	playerInputComponent->BindAxis("Turn", this,
+		&APawn::AddControllerYawInput);
+	playerInputComponent->BindAxis("TurnRate", this,
+		&ASoldier::turnAtRate);
+	playerInputComponent->BindAxis("LookUp", this,
+		&APawn::AddControllerPitchInput);
+	playerInputComponent->BindAxis("LookUpRate", this,
+		&ASoldier::lookUpAtRate);
 
 }
 
+void ASoldier::moveForward(float value) {
+	if(value != 0.0f) {
+		AddMovementInput(GetActorForwardVector(), value);
+	}
+}
+
+void ASoldier::moveRight(float value) {
+	if(value != 0.0f) {
+		AddMovementInput(GetActorRightVector(), value);
+	}
+}
+
+void ASoldier::turnAtRate(float rate) {
+	AddControllerYawInput(rate * baseLookUpRate * 
+		GetWorld()->GetDeltaSeconds()
+	);
+}
+
+void ASoldier::lookUpAtRate(float rate) {
+	AddControllerPitchInput(rate * baseLookUpRate *
+		GetWorld()->GetDeltaSeconds()
+	);
+}
