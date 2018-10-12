@@ -14,6 +14,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "GameFramework/Controller.h"
 #include "GameFramework/Character.h"
 #include "../Weapons/Weapon.h"
 #include "Soldier.generated.h"
@@ -25,21 +26,15 @@ class PROJECTFLASHPOINT_API ASoldier : public ACharacter
 
 public:
 
-	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
-	class USkeletalMeshComponent* meshSoldier;
-
 	// Pawn mesh: 1st person view (arms; seen only by self) 
 	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
-	class USkeletalMeshComponent* firstPersonMeshSoldier;
+	class USkeletalMeshComponent* firstPersonMeshComponent;
 
 	// First person camera 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta =
 		(AllowPrivateAccess = "true")
 	)
 	class UCameraComponent* firstPersonCameraComponent;
-
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<class AWeapon> weaponBlueprint;
 
 	// Base turn rate, in deg/sec. Other scaling may affect final turn rate.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
@@ -100,5 +95,5 @@ protected:
 	void lookUpAtRate(float rate);
 
 private:
-	AWeapon* weapon = nullptr;
+	USkeletalMeshComponent* meshSoldier = nullptr;
 };

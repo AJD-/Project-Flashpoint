@@ -30,10 +30,19 @@ public:
 	// Sets default values for this actor's properties
 	AWeapon();
 
+
+	// Fires a single projectile. handle rapid fire in blueprint
 	UFUNCTION(BlueprintCallable, Category = "Input")
-	void OnFire();
+	void onShoot();
+
+	UFUNCTION(BlueprintCallable, Category = "Input")
+	void onReload();
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+private:
+	//int currentAmmoReserves = maxAmmoReserves;
+	//int currentMagazineSize = maxMagazineSize;
 };

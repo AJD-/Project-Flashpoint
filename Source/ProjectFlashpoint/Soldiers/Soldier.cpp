@@ -8,9 +8,9 @@ ASoldier::ASoldier() {
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(32.5f, 90.0f);
 
-	USkeletalMeshComponent* mesh = GetMesh();
-	mesh->SetRelativeLocation(FVector(0.0f, -5.0f, -90.0f));
-	mesh->SetRelativeRotation(FRotator(0.0f, 0.0f, -90.0f));
+	meshSoldier = GetMesh();
+	meshSoldier->SetRelativeLocation(FVector(0.0f, -5.0f, -90.0f));
+	meshSoldier->SetRelativeRotation(FRotator(0.0f, 0.0f, -90.0f));
 
 
 /******************** First Person Orientation Setup ****************************/
@@ -26,29 +26,21 @@ ASoldier::ASoldier() {
 
 	// Create a mesh component that will be used when being viewed from a 
 	//  '1st person' view (when controlling this pawn)
-	firstPersonMeshSoldier = CreateDefaultSubobject<USkeletalMeshComponent>(
-		TEXT("FirstPersonMeshSoldier"));
-	firstPersonMeshSoldier->SetOnlyOwnerSee(true);
-	firstPersonMeshSoldier->SetupAttachment(firstPersonCameraComponent);
-	firstPersonMeshSoldier->bCastDynamicShadow = false;
-	firstPersonMeshSoldier->CastShadow = false;
-	firstPersonMeshSoldier->SetRelativeLocation(
+	firstPersonMeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(
+		TEXT("FirstPersonMeshComponent"));
+	firstPersonMeshComponent->SetOnlyOwnerSee(true);
+	firstPersonMeshComponent->SetupAttachment(firstPersonCameraComponent);
+	firstPersonMeshComponent->bCastDynamicShadow = false;
+	firstPersonMeshComponent->CastShadow = false;
+	firstPersonMeshComponent->SetRelativeLocation(
 		FVector(-0.5f, -4.4f, -155.7f)
 	);
-	firstPersonMeshSoldier->SetRelativeRotation(FRotator(1.9f, -19.19f, 5.2f));
+	firstPersonMeshComponent->SetRelativeRotation(FRotator(1.9f, -19.19f, 5.2));
 }
 
 // Called when the game starts or when spawned
 void ASoldier::BeginPlay() {
 	Super::BeginPlay();
-
-//	weapon = GetWorld()->SpawnActor<AWeapon>(weaponBlueprint);
-//	weapon->AttachToComponent(firstPersonMeshSoldier, FAttachmentTransformRules(
-//		EAttachmentRule::SnapToTarget, true), TEXT("GripPoint")
-//	);
-
-	UE_LOG(LogTemp, Warning, TEXT("Spwaning Gun"));
-	
 }
 
 // Called every frame

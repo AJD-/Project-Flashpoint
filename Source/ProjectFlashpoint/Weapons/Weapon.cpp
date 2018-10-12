@@ -6,6 +6,7 @@
 // Sets default values
 AWeapon::AWeapon() {
 	meshWeapon = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Weapon"));
+	SetRootComponent(meshWeapon);
 	meshWeapon->bCastDynamicShadow = false;
 	meshWeapon->CastShadow = false;
 
@@ -14,9 +15,6 @@ AWeapon::AWeapon() {
 		TEXT("MuzzleLocation"));
 	weaponMuzzleLocation->SetupAttachment(meshWeapon);
 	weaponMuzzleLocation->SetRelativeLocation(FVector(0.2f, 48.4f, -10.6f));
-
-	UE_LOG(LogTemp, Warning, TEXT("Gun created"));
-
 }
 
 
@@ -27,6 +25,11 @@ void AWeapon::BeginPlay() {
 	
 }
 
-void AWeapon::OnFire() {
-	UE_LOG(LogTemp, Warning, TEXT("Fire"));
+void AWeapon::onShoot() {
+	UE_LOG(LogTemp, Warning, TEXT("Shoot"));
+}
+
+void AWeapon::onReload() {
+	UE_LOG(LogTemp, Warning, TEXT("Reloading"));
+
 }
