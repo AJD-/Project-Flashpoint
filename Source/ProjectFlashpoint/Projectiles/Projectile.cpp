@@ -5,14 +5,14 @@
 
 // Sets default values
 AProjectile::AProjectile() {
-	collisionComponent = CreateDefaultSubobject<UCapsuleComponent>(
+	collisionComponent = CreateDefaultSubobject<USphereComponent>(
 		TEXT("collisionComponent")
 	);
-	collisionComponent->InitCapsuleSize(2.5f, 5.f);
+	collisionComponent->InitSphereRadius(collisionRadius);
 	collisionComponent->BodyInstance.SetCollisionProfileName("Projectile");
 	
 	// set up a notification for when this component hits something blocking
-	collisionComponent->OnComponentHit.AddDynamic(this, &AProjectile::OnHit);	
+	collisionComponent->OnComponentHit.AddDynamic(this, &AProjectile::OnHit);
 
 	// Set as root component
 	RootComponent = collisionComponent;
@@ -25,6 +25,7 @@ AProjectile::AProjectile() {
 	projectileMovement->MaxSpeed = 3000.f;
 	projectileMovement->bRotationFollowsVelocity = true;
 	projectileMovement->bShouldBounce = false;
+
 }
 
 // Called when the game starts or when spawned
