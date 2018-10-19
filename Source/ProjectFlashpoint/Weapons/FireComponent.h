@@ -9,7 +9,7 @@
 #include "FireComponent.generated.h"
 
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS(Blueprintable, BlueprintType, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class PROJECTFLASHPOINT_API UFireComponent : public USceneComponent
 {
 	GENERATED_BODY()
