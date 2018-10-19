@@ -42,7 +42,7 @@ void UFireComponent::OnShoot() {
 				SpawnActor<AProjectile>(projectileClass, spawnTransform, 
 					spawnParams);
 			
-//			spawnedProjectile->projectileDamage = damage;
+			spawnedProjectile->projectileDamage = damage;
 		}
 	}
 }

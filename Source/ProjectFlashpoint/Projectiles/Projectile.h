@@ -25,8 +25,6 @@ class PROJECTFLASHPOINT_API AProjectile : public AActor
 		(AllowPrivateAccess = "true"))
 	class UProjectileMovementComponent* projectileMovement;
 
-	float projectileDamage = 0.0f;
-
 public:
 	// Sets default values for this actor's properties
 	AProjectile();
@@ -36,6 +34,9 @@ public:
 		const { 
 		return projectileMovement; 
 	}
+
+	UPROPERTY(BlueprintReadWrite)
+	float projectileDamage = 0.0f;
 
 	/** called when projectile hits something */
 	UFUNCTION()
