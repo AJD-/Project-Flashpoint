@@ -54,6 +54,25 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Health")
 	float health = 100.0;
 
+
+/****************************** Movement Properties *******************************/
+
+	// Sets the base prone for the Soldier
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Movement")
+	float proneSpeed = 80.0;
+
+	// Sets the base crouch for the Soldier
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Movement")
+	float crouchSpeed = 200.0;
+
+	// Sets the base jog for the Soldier
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Movement")
+	float jogSpeed = 400.0;
+
+	// Sets the base sprint for the Soldier
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Movement")
+	float sprintSpeed = 800.0;
+
 /****************************** Sight Properties ********************************/
 
 	// Defines how far the Soldier can see in centimeters
