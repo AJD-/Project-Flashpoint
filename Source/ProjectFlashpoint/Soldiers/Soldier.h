@@ -59,6 +59,10 @@ public:
 
 	// Sets the base prone for the Soldier
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Movement")
+	float slowSpeed = 80.0;
+
+	// Sets the base prone for the Soldier
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Movement")
 	float proneSpeed = 80.0;
 
 	// Sets the base crouch for the Soldier
@@ -67,11 +71,11 @@ public:
 
 	// Sets the base jog for the Soldier
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Movement")
-	float jogSpeed = 400.0;
+	float walkSpeed = 400.0;
 
 	// Sets the base sprint for the Soldier
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Movement")
-	float sprintSpeed = 800.0;
+	float jogSpeed = 800.0;
 
 /****************************** Sight Properties ********************************/
 
