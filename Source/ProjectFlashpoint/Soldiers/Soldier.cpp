@@ -55,11 +55,11 @@ void ASoldier::SetupPlayerInputComponent(
 	// set up gameplay key bindings
 	check(playerInputComponent);
 
-	// Bind jump events
-	playerInputComponent->BindAction("Jump", IE_Pressed, this,
-		&ACharacter::Jump);
-	playerInputComponent->BindAction("Jump", IE_Released, this,
-		&ACharacter::StopJumping);
+	//// Bind jump events
+	//playerInputComponent->BindAction("Jump", IE_Pressed, this,
+	//	&ACharacter::Jump);
+	//playerInputComponent->BindAction("Jump", IE_Released, this,
+	//	&ACharacter::StopJumping);
 
 	// Bind movement events
 	playerInputComponent->BindAxis("MoveForward", this,
