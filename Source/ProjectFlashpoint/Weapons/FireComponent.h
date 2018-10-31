@@ -37,7 +37,7 @@ public:
 	float horizontalRecoil = .1f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
-	int maxAmmoReserves = 560;
+	int maxAmmoReserves = 530;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
 	int maxMagazineSize = 30;
@@ -47,6 +47,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Input")
 	void OnShoot();
+    
+    UFUNCTION(BlueprintCallable, Category = "Input")
+    void OnReload();
 
 protected:
 	// Called when the game starts
