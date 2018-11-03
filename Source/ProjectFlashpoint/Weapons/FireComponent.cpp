@@ -23,6 +23,9 @@ void UFireComponent::BeginPlay()
 	
 }
 
+int UFireComponent::GetRoundsinGun() const{
+    return currentMagazineSize;
+}
 void UFireComponent::OnShoot() {
 	if(projectileClass != NULL) {
 		if(GetWorld() != NULL) {

@@ -50,12 +50,17 @@ public:
     
     UFUNCTION(BlueprintCallable, Category = "Input")
     void OnReload();
+    
+    UFUNCTION(BlueprintCallable, Category = "Input")
+    int GetRoundsinGun() const;
 
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
 private:
+   
 	int currentMagazineSize = maxMagazineSize;
+    
 	int currentAmmoReserves = maxAmmoReserves;
 };
