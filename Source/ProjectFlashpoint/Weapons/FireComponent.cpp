@@ -22,12 +22,20 @@ void UFireComponent::BeginPlay()
 	// ...
 	
 }
+//static ConstructorHelpers::FObjectFinder<TypeOfComponent> TheObjectName(TEXT(WidgetBlueprint'/Game/Dynamic/Soldiers/Blueprints/AmmoDisplay.AmmoDisplay'));
+//
+//    if ( TheObjectName.Succeeded())
+//    {
+//        NewComp = TheObjectName.Object;
+//    }
 
 int UFireComponent::GetRoundsinGun() const{
     return currentMagazineSize;
 }
 void UFireComponent::OnShoot() {
+    UE_LOG(LogTemp, Warning, TEXT("In On Shoot"));
 	if(projectileClass != NULL) {
+        UE_LOG(LogTemp, Warning, TEXT("Found PC"));
 		if(GetWorld() != NULL) {
             
             //if have no ammo can't fire
