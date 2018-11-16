@@ -23,12 +23,23 @@ void UFireComponent::BeginPlay()
 	
 }
 
+int UFireComponent::GetRoundsinGun() const{
+    return currentMagazineSize;
+}
 void UFireComponent::OnShoot() {
-	UE_LOG(LogTemp, Warning, TEXT("Shooting"));
-
+    UE_LOG(LogTemp, Warning, TEXT("In On Shoot"));
 	if(projectileClass != NULL) {
 		if(GetWorld() != NULL) {
-
+            
+            //if have no ammo can't fire
+            if(currentMagazineSize <= 0){
+                UE_LOG(LogTemp, Warning, TEXT("Out of Ammo"));
+                return;
+            }
+            
+            //decrement ammo
+            currentMagazineSize -= 1;
+            
 			FTransform spawnTransform = GetComponentToWorld();
 
 			//Set Spawn Collision Handling Override
@@ -45,4 +56,28 @@ void UFireComponent::OnShoot() {
 			spawnedProjectile->projectileDamage = damage;
 		}
 	}
+}
+
+void UFireComponent::OnReload() {
+    //UE_LOG(LogTemp, Warning, TEXT("Reload"));
+    
+    //if have no ammo left or the magazine is full, can't reload
+    if(currentAmmoReserves <= 0 || currentMagazineSize >= maxMagazineSize){
+        UE_LOG(LogTemp, Warning, TEXT("Unable to Reload"));
+        return;
+    }
+    
+    //if have less bullets in reserves then the magazine size
+    //fill the magazine with whatever is left
+    if(currentAmmoReserves < (maxMagazineSize - currentMagazineSize)){
+        currentMagazineSize = currentMagazineSize + currentAmmoReserves;
+        currentAmmoReserves = 0;
+        
+    }
+    //fill up magazine with ammo
+    else{
+        currentAmmoReserves -= (maxMagazineSize -  currentMagazineSize);
+        currentMagazineSize = maxMagazineSize;
+    }
+    
 }
