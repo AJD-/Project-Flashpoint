@@ -1,7 +1,7 @@
 // Copyright 2018 Project Flashpoint. All rights reserved!
 
+#include <typeinfo>
 #include "FireComponent.h"
-
 
 // Sets default values for this component's properties
 UFireComponent::UFireComponent()
@@ -19,8 +19,35 @@ void UFireComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// ...
-	
+	adjustAim();
+}
+
+void UFireComponent::adjustAim() {
+	// Get the Soldiers camera location and rotation.
+	ASoldier* soldier;
+	try {
+		soldier = ((ASoldier*) GetOwner());
+	} catch (std::bad_cast& bc) {
+		bc.what();
+		UE_LOG(LogTemp, Error, TEXT("Attempting to cast non-Soldier to Soldier"));
+		return;
+	}
+
+	FVector viewPointLocationStart = soldier->firstPersonCameraComponent->
+		GetComponentLocation();
+	FRotator viewPointRotation = soldier->firstPersonCameraComponent->
+		GetComponentRotation();
+
+	// Find the end of the view point
+	FVector viewPointLocationEnd = viewPointLocationStart +
+		viewPointRotation.Vector() * soldier->maxEngagementLine;
+
+	// Get direction to shoot in
+	FRotator direction = (viewPointLocationEnd - this->GetComponentLocation())
+		.Rotation();
+
+	// Make this the fire direction
+	this->AddRelativeRotation(direction);
 }
 
 int UFireComponent::GetRoundsinGun() const{
@@ -59,25 +86,24 @@ void UFireComponent::OnShoot() {
 }
 
 void UFireComponent::OnReload() {
-    //UE_LOG(LogTemp, Warning, TEXT("Reload"));
-    
-    //if have no ammo left or the magazine is full, can't reload
-    if(currentAmmoReserves <= 0 || currentMagazineSize >= maxMagazineSize){
-        UE_LOG(LogTemp, Warning, TEXT("Unable to Reload"));
-        return;
-    }
-    
-    //if have less bullets in reserves then the magazine size
-    //fill the magazine with whatever is left
-    if(currentAmmoReserves < (maxMagazineSize - currentMagazineSize)){
-        currentMagazineSize = currentMagazineSize + currentAmmoReserves;
-        currentAmmoReserves = 0;
-        
-    }
-    //fill up magazine with ammo
-    else{
-        currentAmmoReserves -= (maxMagazineSize -  currentMagazineSize);
-        currentMagazineSize = maxMagazineSize;
-    }
-    
+	//UE_LOG(LogTemp, Warning, TEXT("Reload"));
+
+	//if have no ammo left or the magazine is full, can't reload
+	if(currentAmmoReserves <= 0 || currentMagazineSize >= maxMagazineSize) {
+		UE_LOG(LogTemp, Warning, TEXT("Unable to Reload"));
+		return;
+	}
+
+	//if have less bullets in reserves then the magazine size
+	//fill the magazine with whatever is left
+	if(currentAmmoReserves < (maxMagazineSize - currentMagazineSize)) {
+		currentMagazineSize = currentMagazineSize + currentAmmoReserves;
+		currentAmmoReserves = 0;
+
+	}
+	//fill up magazine with ammo
+	else {
+		currentAmmoReserves -= (maxMagazineSize - currentMagazineSize);
+		currentMagazineSize = maxMagazineSize;
+	}
 }
