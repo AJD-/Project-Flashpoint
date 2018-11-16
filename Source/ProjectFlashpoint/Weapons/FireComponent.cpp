@@ -22,12 +22,6 @@ void UFireComponent::BeginPlay()
 	// ...
 	
 }
-//static ConstructorHelpers::FObjectFinder<TypeOfComponent> TheObjectName(TEXT(WidgetBlueprint'/Game/Dynamic/Soldiers/Blueprints/AmmoDisplay.AmmoDisplay'));
-//
-//    if ( TheObjectName.Succeeded())
-//    {
-//        NewComp = TheObjectName.Object;
-//    }
 
 int UFireComponent::GetRoundsinGun() const{
     return currentMagazineSize;
@@ -35,7 +29,6 @@ int UFireComponent::GetRoundsinGun() const{
 void UFireComponent::OnShoot() {
     UE_LOG(LogTemp, Warning, TEXT("In On Shoot"));
 	if(projectileClass != NULL) {
-        UE_LOG(LogTemp, Warning, TEXT("Found PC"));
 		if(GetWorld() != NULL) {
             
             //if have no ammo can't fire
@@ -43,7 +36,6 @@ void UFireComponent::OnShoot() {
                 UE_LOG(LogTemp, Warning, TEXT("Out of Ammo"));
                 return;
             }
-            UE_LOG(LogTemp, Warning, TEXT("Shooting-Current Ammo: %d"),currentMagazineSize );
             
             //decrement ammo
             currentMagazineSize -= 1;
@@ -70,7 +62,7 @@ void UFireComponent::OnReload() {
     //UE_LOG(LogTemp, Warning, TEXT("Reload"));
     
     //if have no ammo left or the magazine is full, can't reload
-    if(currentAmmoReserves <= 0 || currentMagazineSize >= 30){
+    if(currentAmmoReserves <= 0 || currentMagazineSize >= maxMagazineSize){
         UE_LOG(LogTemp, Warning, TEXT("Unable to Reload"));
         return;
     }
@@ -78,17 +70,14 @@ void UFireComponent::OnReload() {
     //if have less bullets in reserves then the magazine size
     //fill the magazine with whatever is left
     if(currentAmmoReserves < (maxMagazineSize - currentMagazineSize)){
-        UE_LOG(LogTemp, Warning, TEXT("Reloading-CurrentReserves: %d"),currentAmmoReserves);
         currentMagazineSize = currentMagazineSize + currentAmmoReserves;
         currentAmmoReserves = 0;
-        UE_LOG(LogTemp, Warning, TEXT("Reloaded-CurrentReserves: %d"),currentAmmoReserves);
         
     }
     //fill up magazine with ammo
     else{
         currentAmmoReserves -= (maxMagazineSize -  currentMagazineSize);
         currentMagazineSize = maxMagazineSize;
-        UE_LOG(LogTemp, Warning, TEXT("Reloaded-CurrentReserves: %d"),currentAmmoReserves);
     }
     
 }
