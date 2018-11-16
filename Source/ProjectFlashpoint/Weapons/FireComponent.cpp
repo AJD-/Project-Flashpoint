@@ -1,7 +1,7 @@
 // Copyright 2018 Project Flashpoint. All rights reserved!
 
+#include <typeinfo>
 #include "FireComponent.h"
-
 
 // Sets default values for this component's properties
 UFireComponent::UFireComponent()
@@ -19,8 +19,35 @@ void UFireComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// ...
-	
+	adjustAim();
+}
+
+void UFireComponent::adjustAim() {
+	// Get the Soldiers camera location and rotation.
+	ASoldier* soldier;
+	try {
+		soldier = ((ASoldier*) GetOwner());
+	} catch (std::bad_cast& bc) {
+		bc.what();
+		UE_LOG(LogTemp, Error, TEXT("Attempting to cast non-Soldier to Soldier"));
+		return;
+	}
+
+	FVector viewPointLocationStart = soldier->firstPersonCameraComponent->
+		GetComponentLocation();
+	FRotator viewPointRotation = soldier->firstPersonCameraComponent->
+		GetComponentRotation();
+
+	// Find the end of the view point
+	FVector viewPointLocationEnd = viewPointLocationStart +
+		viewPointRotation.Vector() * soldier->maxEngagementLine;
+
+	// Get direction to shoot in
+	FRotator direction = (viewPointLocationEnd - this->GetComponentLocation())
+		.Rotation();
+
+	// Make this the fire direction
+	this->AddRelativeRotation(direction);
 }
 
 void UFireComponent::OnShoot() {

@@ -6,6 +6,7 @@
 #include "Engine/World.h"
 #include "Components/SceneComponent.h"
 #include "../Projectiles/Projectile.h"
+#include "../Soldiers/Soldier.h"
 #include "FireComponent.generated.h"
 
 
@@ -48,9 +49,14 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Input")
 	void OnShoot();
 
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Input")
+	void OnFire();
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
+
+	void adjustAim();
 
 private:
 	int currentMagazineSize = maxMagazineSize;
