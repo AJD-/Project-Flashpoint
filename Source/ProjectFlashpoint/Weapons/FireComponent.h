@@ -38,7 +38,7 @@ public:
 	float horizontalRecoil = .1f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
-	int maxAmmoReserves = 560;
+	int maxAmmoReserves = 530;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
 	int maxMagazineSize = 30;
@@ -48,6 +48,12 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Input")
 	void OnShoot();
+    
+    UFUNCTION(BlueprintCallable, Category = "Input")
+    void OnReload();
+    
+    UFUNCTION(BlueprintCallable, Category = "Input")
+    int GetRoundsinGun() const;
 
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Input")
 	void OnFire();
@@ -59,6 +65,8 @@ protected:
 	void adjustAim();
 
 private:
+   
 	int currentMagazineSize = maxMagazineSize;
+    
 	int currentAmmoReserves = maxAmmoReserves;
 };
