@@ -9,6 +9,11 @@
 #include "../Soldiers/Soldier.h"
 #include "FireComponent.generated.h"
 
+UENUM(BlueprintType)enum class EWeaponMode: uint8{
+    WM_SingleFire     UMETA(DisplayName = "SingleFire"),
+    WM_BurstFire      UMETA(DisplayName = "BurstFire"),
+    WM_FullAuto       UMETA(DisplayName = "FullAutomaticFire")
+};
 
 UCLASS(Blueprintable, BlueprintType, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class PROJECTFLASHPOINT_API UFireComponent : public USceneComponent
@@ -57,6 +62,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Input")
 	void OnFire();
+    
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Enum)
+    EWeaponMode WeaponMode;
 
 protected:
 	// Called when the game starts
@@ -65,7 +73,7 @@ protected:
 	void adjustAim();
 
 private:
-   
+    
 	int currentMagazineSize = maxMagazineSize;
     
 	int currentAmmoReserves = maxAmmoReserves;
