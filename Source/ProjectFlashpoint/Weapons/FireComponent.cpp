@@ -1,7 +1,7 @@
 // Copyright 2018 Project Flashpoint. All rights reserved!
-
-#include <typeinfo>
 #include "FireComponent.h"
+#include <typeinfo>
+
 
 // Sets default values for this component's properties
 UFireComponent::UFireComponent()
@@ -56,8 +56,9 @@ int UFireComponent::GetRoundsinGun() const{
 void UFireComponent::OnShoot() {
     UE_LOG(LogTemp, Warning, TEXT("In On Shoot"));
 	if(projectileClass != NULL) {
+        UE_LOG(LogTemp, Warning, TEXT("Pass Projectile Class"));
 		if(GetWorld() != NULL) {
-            
+            UE_LOG(LogTemp, Warning, TEXT("Pass Get World"));
             //if have no ammo can't fire
             if(currentMagazineSize <= 0){
                 UE_LOG(LogTemp, Warning, TEXT("Out of Ammo"));
