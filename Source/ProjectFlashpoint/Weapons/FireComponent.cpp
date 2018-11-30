@@ -1,7 +1,7 @@
 // Copyright 2018 Project Flashpoint. All rights reserved!
 
-#include <typeinfo>
 #include "FireComponent.h"
+#include <typeinfo>
 
 // Sets default values for this component's properties
 UFireComponent::UFireComponent()
@@ -81,6 +81,19 @@ void UFireComponent::OnShoot() {
 					spawnParams);
 			
 			spawnedProjectile->projectileDamage = damage;
+
+			// Apply Recoil
+			ASoldier* soldier;
+			try {
+				soldier = ((ASoldier*) GetOwner());
+			} catch(std::bad_cast& bc) {
+				bc.what();
+				UE_LOG(LogTemp, Error, TEXT("Attempting to cast non-Soldier to Soldier"));
+				return;
+			}
+			float vertical = FMath::RandRange(-1.f, 0.f)*verticalRecoil;
+			float horizontal = FMath::RandRange(-1.f, 1.f)*horizontalRecoil;
+			soldier->AddRecoil(vertical, horizontal);
 		}
 	}
 }
