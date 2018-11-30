@@ -6,6 +6,7 @@
 #include "Engine/World.h"
 #include "Components/SceneComponent.h"
 #include "../Projectiles/Projectile.h"
+#include "../Soldiers/Soldier.h"
 #include "FireComponent.generated.h"
 
 
@@ -37,7 +38,7 @@ public:
 	float horizontalRecoil = .1f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
-	int maxAmmoReserves = 560;
+	int maxAmmoReserves = 530;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
 	int maxMagazineSize = 30;
@@ -47,12 +48,25 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Input")
 	void OnShoot();
+    
+    UFUNCTION(BlueprintCallable, Category = "Input")
+    void OnReload();
+    
+    UFUNCTION(BlueprintCallable, Category = "Input")
+    int GetRoundsinGun() const;
+
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Input")
+	void OnFire();
 
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
+	void adjustAim();
+
 private:
+   
 	int currentMagazineSize = maxMagazineSize;
+    
 	int currentAmmoReserves = maxAmmoReserves;
 };
