@@ -1,16 +1,11 @@
 // Copyright 2018 Project Flashpoint. All rights reserved!
 #include "FireComponent.h"
-#include <typeinfo>
-
 
 // Sets default values for this component's properties
 UFireComponent::UFireComponent()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
-	// ...
 }
 
 
@@ -20,6 +15,26 @@ void UFireComponent::BeginPlay()
 	Super::BeginPlay();
 
 	adjustAim();
+
+	// Sets priority to Full, Burst, Single on multi fire mode weapons.
+	if(bFullAutoMode) {
+		fireMode = EWeaponMode::WM_FullAuto;
+	} else if(bBurstFireMode) {
+		fireMode = EWeaponMode::WM_BurstFire;
+	} else {
+		fireMode = EWeaponMode::WM_SingleFire;
+	}
+}
+
+void UFireComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
+	FActorComponentTickFunction * ThisTickFunction) {
+	// Burst Fire Logic
+	if(burstShooting) {
+		lastShotTime += DeltaTime;
+		if(nextShotTime <= lastShotTime) {
+			fireBurst();
+		}
+	}
 }
 
 void UFireComponent::adjustAim() {
@@ -50,15 +65,126 @@ void UFireComponent::adjustAim() {
 	this->AddRelativeRotation(direction);
 }
 
-int UFireComponent::GetRoundsinGun() const{
+int UFireComponent::getCurrentMagazineSize() const{
     return currentMagazineSize;
 }
-void UFireComponent::OnShoot() {
-    UE_LOG(LogTemp, Warning, TEXT("In On Shoot"));
+
+int UFireComponent::getCurrentAmmoReserves() const {
+	return currentAmmoReserves;
+}
+
+void UFireComponent::OnFire() {
+	// If already firing
+	if(!canFire) {
+		return;
+	}
+	switch(fireMode) {
+	case EWeaponMode::WM_BurstFire:
+		canFire = false;
+		fireBurst();
+		break;
+	case EWeaponMode::WM_FullAuto:
+		fireFull();
+		break;
+	case EWeaponMode::WM_SingleFire:
+		canFire = false;
+		fireSingle();
+		break;
+	}
+}
+
+void UFireComponent::OnRelease() {
+	GetWorld()->GetTimerManager().ClearTimer(fullAutoTimer);
+}
+
+void UFireComponent::ToggleFireMode() {
+	// For each mode, toggle to the next. If that mode is not available, 
+	//  contine to toggle
+	switch(fireMode) {
+	case EWeaponMode::WM_SingleFire:
+		fireMode = EWeaponMode::WM_BurstFire;
+		if(!bBurstFireMode) {
+			ToggleFireMode();
+		}
+		break;
+	case EWeaponMode::WM_BurstFire:
+		fireMode = EWeaponMode::WM_FullAuto;
+		if(!bFullAutoMode) {
+			ToggleFireMode();
+		}
+		break;
+	case EWeaponMode::WM_FullAuto:
+		fireMode = EWeaponMode::WM_SingleFire;
+		if(!bSingleFireMode) {
+			ToggleFireMode();
+		}
+		break;
+	}
+}
+
+void UFireComponent::OnReload() {
+
+	//if have no ammo left or the magazine is full, can't reload
+	if(currentAmmoReserves <= 0 || currentMagazineSize >= maxMagazineSize) {
+		UE_LOG(LogTemp, Warning, TEXT("Unable to Reload"));
+		return;
+	}
+
+	//if have less bullets in reserves then the magazine size
+	//fill the magazine with whatever is left
+	if(currentAmmoReserves < (maxMagazineSize - currentMagazineSize)) {
+		currentMagazineSize = currentMagazineSize + currentAmmoReserves;
+		currentAmmoReserves = 0;
+
+	}
+	//fill up magazine with ammo
+	else {
+		currentAmmoReserves -= (maxMagazineSize - currentMagazineSize);
+		currentMagazineSize = maxMagazineSize;
+	}
+}
+
+void UFireComponent::fireBurst() {
+	// If burst still firing
+	if(currentShot < shotsPerBurst) {
+		burstShooting = true;
+		shootBullet();
+
+		// Get the last and next shot time
+		lastShotTime = GetWorld()->GetTimeSeconds();
+		nextShotTime = lastShotTime + getSecondsPerShot();
+
+		currentShot++;
+	// If the burst is over. Reset state
+	} else {
+		burstShooting = false;
+		canFire = true;
+		currentShot = 0;
+	}
+}
+
+void UFireComponent::fireFull() {
+	shootBullet();
+
+	// Continuously fire until the the timer is cleared
+	GetWorld()->GetTimerManager().SetTimer(fullAutoTimer, this,
+		&UFireComponent::shootBullet, getSecondsPerShot(), true);
+}
+
+void UFireComponent::fireSingle() {
+	shootBullet();
+	
+	// Unused timer handle
+	FTimerHandle UNUSED;
+	// Call the can fire funciton after a set time
+	GetWorld()->GetTimerManager().SetTimer(UNUSED, this,
+		&UFireComponent::canFireAgain, getSecondsPerShot(), false);
+}
+
+void UFireComponent::shootBullet() {
 	if(projectileClass != NULL) {
-        UE_LOG(LogTemp, Warning, TEXT("Pass Projectile Class"));
 		if(GetWorld() != NULL) {
-            UE_LOG(LogTemp, Warning, TEXT("Pass Get World"));
+
             //if have no ammo can't fire
             if(currentMagazineSize <= 0){
                 UE_LOG(LogTemp, Warning, TEXT("Out of Ammo"));
@@ -86,25 +212,11 @@ void UFireComponent::OnShoot() {
 	}
 }
 
-void UFireComponent::OnReload() {
-	//UE_LOG(LogTemp, Warning, TEXT("Reload"));
+float UFireComponent::getSecondsPerShot() {
+	// Calculates the shots per second
+	return 60.f/(float)rateOfFire;
+}
 
-	//if have no ammo left or the magazine is full, can't reload
-	if(currentAmmoReserves <= 0 || currentMagazineSize >= maxMagazineSize) {
-		UE_LOG(LogTemp, Warning, TEXT("Unable to Reload"));
-		return;
-	}
-
-	//if have less bullets in reserves then the magazine size
-	//fill the magazine with whatever is left
-	if(currentAmmoReserves < (maxMagazineSize - currentMagazineSize)) {
-		currentMagazineSize = currentMagazineSize + currentAmmoReserves;
-		currentAmmoReserves = 0;
-
-	}
-	//fill up magazine with ammo
-	else {
-		currentAmmoReserves -= (maxMagazineSize - currentMagazineSize);
-		currentMagazineSize = maxMagazineSize;
-	}
+void UFireComponent::canFireAgain() {
+	canFire = true;
 }
