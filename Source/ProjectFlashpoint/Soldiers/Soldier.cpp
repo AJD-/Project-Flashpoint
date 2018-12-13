@@ -47,6 +47,16 @@ void ASoldier::BeginPlay() {
 void ASoldier::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);
 
+	verticalRecoil = FMath::FInterpTo(verticalRecoil, 0, DeltaTime, 10);
+	horizontalRecoil = FMath::FInterpTo(horizontalRecoil, 0, DeltaTime, 10);
+
+	AddControllerPitchInput(verticalRecoil);
+	AddControllerYawInput(horizontalRecoil);
+}
+
+void ASoldier::AddRecoil(float vertical, float horizontal) {
+	verticalRecoil += vertical;
+	horizontalRecoil += horizontal;
 }
 
 // Called to bind functionality to input

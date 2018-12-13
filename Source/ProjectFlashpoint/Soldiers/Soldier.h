@@ -16,6 +16,7 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "GameFramework/Controller.h"
 #include "GameFramework/Character.h"
+#include "Math/InterpCurve.h"
 #include "../Weapons/Weapon.h"
 #include "Soldier.generated.h"
 
@@ -55,7 +56,7 @@ public:
 	float health = 100.0;
 
 
-/****************************** Movement Properties *******************************/
+/**************************** Movement Properties *******************************/
 
 	// Sets the base prone for the Soldier
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Movement")
@@ -97,6 +98,9 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* 
 		PlayerInputComponent) override;
 
+	UFUNCTION(BlueprintCallable, Category = "Recoil")
+	void AddRecoil(float vertical, float horizontal);
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -119,4 +123,7 @@ protected:
 
 private:
 	USkeletalMeshComponent* meshSoldier = nullptr;
+
+	float verticalRecoil = 0.f;
+	float horizontalRecoil = 0.f;
 };
