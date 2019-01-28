@@ -88,6 +88,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Sight")
 	float maxEngagementLine = 8500.0;
 
+/****************************** Movement Properties ********************************/
+
 	// Sets default values for this character's properties
 	ASoldier();
 
@@ -100,10 +102,6 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Recoil")
 	void AddRecoil(float vertical, float horizontal);
-
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
 
 	/** Handles moving forward / backward */
 	void moveForward(float value);
@@ -120,6 +118,10 @@ protected:
 	 * @param Rate	This is a normalized rate
 	 */
 	void lookUpAtRate(float rate);
+
+protected:
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
 
 private:
 	USkeletalMeshComponent* meshSoldier = nullptr;
