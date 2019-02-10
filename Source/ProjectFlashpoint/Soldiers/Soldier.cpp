@@ -1,7 +1,7 @@
 // Copyright 2018 Project Flashpoint. All rights reserved!
 
 #include "Soldier.h"
-
+#include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values
 ASoldier::ASoldier() {
@@ -13,8 +13,8 @@ ASoldier::ASoldier() {
 	meshSoldier->SetRelativeRotation(FRotator(0.0f, 0.0f, -90.0f));
 
 
-/******************** First Person Orientation Setup ****************************/
-	// Create a CameraComponent	
+	/******************** First Person Orientation Setup ****************************/
+		// Create a CameraComponent	
 	firstPersonCameraComponent = CreateDefaultSubobject<UCameraComponent>(
 		TEXT("FirstPersonCamera"));
 	firstPersonCameraComponent->SetupAttachment(GetCapsuleComponent());
@@ -41,6 +41,8 @@ ASoldier::ASoldier() {
 // Called when the game starts or when spawned
 void ASoldier::BeginPlay() {
 	Super::BeginPlay();
+	movementComponent = Cast<UCharacterMovementComponent>(this->GetMovementComponent());
+	movementComponent->MaxWalkSpeed = walkSpeed;
 }
 
 // Called every frame
@@ -65,7 +67,7 @@ void ASoldier::SetupPlayerInputComponent(
 	// set up gameplay key bindings
 	check(playerInputComponent);
 
-	//// Bind jump events
+	// Bind jump events
 	//playerInputComponent->BindAction("Jump", IE_Pressed, this,
 	//	&ACharacter::Jump);
 	//playerInputComponent->BindAction("Jump", IE_Released, this,
@@ -81,30 +83,124 @@ void ASoldier::SetupPlayerInputComponent(
 	// "turn" handles devices that provide an absolute delta, such as a mouse.
 	// "turnrate" is for devices that we choose to treat as a rate of change, such as an analog joystick
 	playerInputComponent->BindAxis("Turn", this,
-		&APawn::AddControllerYawInput);
+		&ASoldier::AddControllerYawInput);
 	playerInputComponent->BindAxis("TurnRate", this,
 		&ASoldier::turnAtRate);
 	playerInputComponent->BindAxis("LookUp", this,
-		&APawn::AddControllerPitchInput);
+		&ASoldier::AddControllerPitchInput);
 	playerInputComponent->BindAxis("LookUpRate", this,
 		&ASoldier::lookUpAtRate);
 
 }
 
+/****************************** Movement Functions *********************************/
+
+int ASoldier::getActionState()
+{
+	switch (actionState) {
+	case ESoldierMovementMode::MM_Walk:
+		return 1;
+	case ESoldierMovementMode::MM_Jog:
+		return 2;
+	case ESoldierMovementMode::MM_Crouch:
+		return 3;
+	case ESoldierMovementMode::MM_Prone:
+		return 4;
+	case ESoldierMovementMode::MM_Jump:
+		return 5;
+	}
+	return 0; // This is an error
+}
+
+/** Change the movement state of the character
+	* @param NewAction  integer mode that changes movement state
+		1 - walk
+		2 - run
+		3 - crouch
+		4 - prone
+		5 - jump
+	*/
+void ASoldier::changeActionState(int newAction)
+{
+	switch (actionState) {
+	case ESoldierMovementMode::MM_Walk:
+		switch (newAction) {
+		case 2:
+			movementComponent->MaxWalkSpeed = jogSpeed;
+			actionState = ESoldierMovementMode::MM_Jog;
+			break;
+		case 3:
+			movementComponent->MaxWalkSpeed = crouchSpeed;
+			actionState = ESoldierMovementMode::MM_Crouch;
+			break;
+		case 4:
+			movementComponent->MaxWalkSpeed = proneSpeed;
+			actionState = ESoldierMovementMode::MM_Prone;
+			break;
+		case 5:
+			break;
+		}
+		break;
+	case ESoldierMovementMode::MM_Jog:
+		switch (newAction) {
+		case 2:
+			movementComponent->MaxWalkSpeed = walkSpeed;
+			actionState = ESoldierMovementMode::MM_Walk;
+			break;
+		case 5:
+			break;
+		}
+		break;
+	case ESoldierMovementMode::MM_Crouch:
+		switch (newAction) {
+		case 3:
+			movementComponent->MaxWalkSpeed = walkSpeed;
+			actionState = ESoldierMovementMode::MM_Walk;
+			break;
+		case 4:
+			movementComponent->MaxWalkSpeed = proneSpeed;
+			actionState = ESoldierMovementMode::MM_Prone;
+			break;
+		}
+		break;
+	case ESoldierMovementMode::MM_Prone:
+		switch (newAction) {
+		case 3:
+			movementComponent->MaxWalkSpeed = crouchSpeed;
+			actionState = ESoldierMovementMode::MM_Crouch;
+			break;
+		case 4:
+			movementComponent->MaxWalkSpeed = walkSpeed;
+			actionState = ESoldierMovementMode::MM_Walk;
+			break;
+		}
+		break;
+	case ESoldierMovementMode::MM_Jump:
+		switch (newAction) {
+		case 1:
+			movementComponent->MaxWalkSpeed = walkSpeed;
+			break;
+		case 2:
+			break;
+		}
+		break;
+	}
+}
+
 void ASoldier::moveForward(float value) {
-	if(value != 0.0f) {
+	if (value != 0.0f) {
 		AddMovementInput(GetActorForwardVector(), value);
 	}
 }
 
 void ASoldier::moveRight(float value) {
-	if(value != 0.0f) {
+	if (value != 0.0f) {
 		AddMovementInput(GetActorRightVector(), value);
 	}
 }
 
 void ASoldier::turnAtRate(float rate) {
-	AddControllerYawInput(rate * baseLookUpRate * 
+	AddControllerYawInput(rate * baseLookUpRate *
 		GetWorld()->GetDeltaSeconds()
 	);
 }
