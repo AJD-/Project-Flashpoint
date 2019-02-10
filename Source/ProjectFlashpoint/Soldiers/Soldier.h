@@ -114,12 +114,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Movement")
 		float slowSpeed = 80.0;
 
-
-	bool jogPressed = false;
-	bool crouchPressed = false;
-	bool pronePressed = false;
-	bool jumpPressed = false;
-
 	/****************************** Movement Functions *********************************/
 
 	/** Gets the action state of the character

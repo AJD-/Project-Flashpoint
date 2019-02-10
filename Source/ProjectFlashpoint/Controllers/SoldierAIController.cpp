@@ -32,7 +32,7 @@ void ASoldierAIController::Tick(float DeltaTime)
 
 	// This is example AI code, can be deleted whenever
 	bool isSwitching = false;
-	if (wait >= 200)
+	if (wait >= 150)
 	{
 		isSwitching = true;
 		lastState += 1;
