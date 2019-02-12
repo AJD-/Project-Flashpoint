@@ -46,6 +46,10 @@ public:
 	float baseLookUpRate = 45.f;
 
 /****************************** Health Properties *******************************/
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Info")
+	FString soldierName = "Base Soldier";
+
+/****************************** Health Properties *******************************/
 
 	// Sets the base armor for the Soldier
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Health")
