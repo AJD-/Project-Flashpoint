@@ -99,6 +99,23 @@ AProjectFlashpointCharacter::AProjectFlashpointCharacter() {
 	//bUsingMotionControllers = true;
 }
 
+void AProjectFlashpointCharacter::Tick(float DeltaTime)
+{
+	//Multiplayer Muzzle Rotation
+
+	Super::Tick(DeltaTime);
+
+	//Not locally controlled, view others' rotation
+	if (!IsLocallyControlled())
+	{
+		//Update meshes of players looking at
+		FRotator NewRot = Mesh1P->RelativeRotation;
+		NewRot.Pitch = RemoteViewPitch * 360.0f / 255.0f;
+
+		Mesh1P->SetRelativeRotation(NewRot);
+	}
+}
+
 void AProjectFlashpointCharacter::BeginPlay() {
 	// Call the base class  
 	Super::BeginPlay();
@@ -163,41 +180,8 @@ void AProjectFlashpointCharacter::SetupPlayerInputComponent(class
 }
 
 void AProjectFlashpointCharacter::onFire() {
-	// try and fire a projectile
-	if (ProjectileClass != NULL) {
-		UWorld* const World = GetWorld();
-		if (World != NULL) {
-			if (bUsingMotionControllers) {
-				const FRotator SpawnRotation = 
-					VR_MuzzleLocation->GetComponentRotation();
-				const FVector SpawnLocation = 
-					VR_MuzzleLocation->GetComponentLocation();
-				World->SpawnActor<AProjectFlashpointProjectile>(ProjectileClass, 
-					SpawnLocation, SpawnRotation);
-			} else {
-				const FRotator SpawnRotation = GetControlRotation();
 
-				// MuzzleOffset is in camera space, so transform it to world 
-				//  space before offsetting from the character location to find 
-				//  the final muzzle position
-				const FVector SpawnLocation = ((FP_MuzzleLocation != nullptr) 
-					? FP_MuzzleLocation->GetComponentLocation() : 
-					GetActorLocation()) +
-					SpawnRotation.RotateVector(GunOffset);
-
-				//Set Spawn Collision Handling Override
-				FActorSpawnParameters ActorSpawnParams;
-				ActorSpawnParams.SpawnCollisionHandlingOverride = 
-					ESpawnActorCollisionHandlingMethod::
-					AdjustIfPossibleButDontSpawnIfColliding;
-
-				// spawn the projectile at the muzzle
-				World->SpawnActor<AProjectFlashpointProjectile>(
-					ProjectileClass, SpawnLocation, SpawnRotation, 
-					ActorSpawnParams);
-			}
-		}
-	}
+	ServeronFire();
 
 	// try and play the sound if specified
 	if (FireSound != NULL) {
@@ -213,6 +197,53 @@ void AProjectFlashpointCharacter::onFire() {
 			AnimInstance->Montage_Play(FireAnimation, 1.f);
 		}
 	}
+}
+
+void AProjectFlashpointCharacter::ServeronFire_Implementation()
+{
+	// try and fire a projectile
+	if (ProjectileClass != NULL) {
+		UWorld* const World = GetWorld();
+		if (World != NULL) {
+			if (bUsingMotionControllers) {
+				const FRotator SpawnRotation =
+					VR_MuzzleLocation->GetComponentRotation();
+				const FVector SpawnLocation =
+					VR_MuzzleLocation->GetComponentLocation();
+				World->SpawnActor<AProjectFlashpointProjectile>(ProjectileClass,
+					SpawnLocation, SpawnRotation);
+			}
+			else {
+				const FRotator SpawnRotation = GetControlRotation();
+
+				// MuzzleOffset is in camera space, so transform it to world 
+				//  space before offsetting from the character location to find 
+				//  the final muzzle position
+				const FVector SpawnLocation = ((FP_MuzzleLocation != nullptr)
+					? FP_MuzzleLocation->GetComponentLocation() :
+					GetActorLocation()) +
+					SpawnRotation.RotateVector(GunOffset);
+
+				//Set Spawn Collision Handling Override
+				FActorSpawnParameters ActorSpawnParams;
+				ActorSpawnParams.SpawnCollisionHandlingOverride =
+					ESpawnActorCollisionHandlingMethod::
+					AdjustIfPossibleButDontSpawnIfColliding;
+
+				// spawn the projectile at the muzzle
+				World->SpawnActor<AProjectFlashpointProjectile>(
+					ProjectileClass, SpawnLocation, SpawnRotation,
+					ActorSpawnParams);
+
+
+			}
+		}
+	}
+}
+
+bool AProjectFlashpointCharacter::ServeronFire_Validate()
+{
+	return true;
 }
 
 void AProjectFlashpointCharacter::onResetVR() {
