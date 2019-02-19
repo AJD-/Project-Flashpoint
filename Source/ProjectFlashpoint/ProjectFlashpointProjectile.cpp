@@ -38,6 +38,10 @@ AProjectFlashpointProjectile::AProjectFlashpointProjectile() {
 
 	// Die after 3 seconds by default
 	InitialLifeSpan = 3.0f;
+
+	SetReplicates(true);
+	SetReplicateMovement(true);
+
 }
 
 /**
@@ -49,9 +53,10 @@ void AProjectFlashpointProjectile::onHit(UPrimitiveComponent* HitComp,
 	if ((OtherActor != NULL) && (OtherActor != this) && (OtherComp != NULL) && 
 		OtherComp->IsSimulatingPhysics()) {
 		OtherComp->AddImpulseAtLocation(GetVelocity() * 100.0f, 
-			GetActorLocation()
-		);
-
+			GetActorLocation());
+	}
+	if (Role == ROLE_Authority)
+	{
 		Destroy();
 	}
 }

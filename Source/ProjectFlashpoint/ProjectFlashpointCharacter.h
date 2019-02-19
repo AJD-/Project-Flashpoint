@@ -95,12 +95,15 @@ public:
 	FORCEINLINE class UCameraComponent* getFirstPersonCameraComponent() 
 		const { return FirstPersonCameraComponent; }
 
+	virtual void Tick(float DeltaTime) override;
 
 protected:
 	virtual void BeginPlay();
 	
 	// Fires a projectile.
 	void onFire();
+	UFUNCTION(Server, Reliable, WithValidation)
+	void ServeronFire(); 
 
 	// Resets HMD orientation and position in VR.
 	void onResetVR();
