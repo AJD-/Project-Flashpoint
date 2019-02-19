@@ -36,9 +36,6 @@ class PROJECTFLASHPOINT_API ASoldier : public ACharacter
 
 public:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
-	FString name = "Base Soldier";
-
 	// Pawn mesh: 1st person view (arms; seen only by self) 
 	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
 		class USkeletalMeshComponent* firstPersonMeshComponent;
@@ -57,7 +54,12 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
 		float baseLookUpRate = 45.f;
 
-	/****************************** Health Properties *******************************/
+
+/****************************** Health Properties *******************************/
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Info")
+	FString soldierName = "Base Soldier";
+
+/****************************** Health Properties *******************************/
 
 		// Sets the base armor for the Soldier
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Health")
