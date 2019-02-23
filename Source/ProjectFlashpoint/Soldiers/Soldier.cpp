@@ -54,6 +54,13 @@ void ASoldier::Tick(float DeltaTime) {
 
 	AddControllerPitchInput(verticalRecoil);
 	AddControllerYawInput(horizontalRecoil);
+
+	if (!IsLocallyControlled())
+	{
+		FRotator NewRot = firstPersonCameraComponent->RelativeRotation;
+		NewRot.Pitch = RemoteViewPitch * 360.0f / 255.0f;
+		firstPersonCameraComponent->SetRelativeRotation(NewRot);
+	}
 }
 
 void ASoldier::AddRecoil(float vertical, float horizontal) {

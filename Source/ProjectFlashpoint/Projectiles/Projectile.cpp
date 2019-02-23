@@ -26,6 +26,9 @@ AProjectile::AProjectile() {
 	projectileMovement->bRotationFollowsVelocity = true;
 	projectileMovement->bShouldBounce = false;
 
+	SetReplicates(true);
+	SetReplicateMovement(true);
+
 }
 
 // Called when the game starts or when spawned
@@ -43,5 +46,9 @@ void AProjectile::OnHit(UPrimitiveComponent * hitComp, AActor * otherActor,
 		otherComp->AddImpulseAtLocation(GetVelocity() * 100.0f,
 			GetActorLocation());
 	}
-	Destroy();
+	if (Role == ROLE_Authority)
+	{
+		Destroy();
+	}
+	
 }

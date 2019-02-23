@@ -154,6 +154,9 @@ private:
 	*/
 	void shootBullet();
 
+	UFUNCTION(Server, Reliable, WithValidation)
+	void ServershootBullet();
+
 	/** Get the seconds between shots
 	 * @param flaot - seconds between each shot
 	*/

@@ -184,18 +184,24 @@ void UFireComponent::fireSingle() {
 }
 
 void UFireComponent::shootBullet() {
-	if(projectileClass != NULL) {
-		if(GetWorld() != NULL) {
+	//Spawn on the server
+	ServershootBullet();
+}
 
-            //if have no ammo can't fire
-            if(currentMagazineSize <= 0){
-                UE_LOG(LogTemp, Warning, TEXT("Out of Ammo"));
-                return;
-            }
-            
-            //decrement ammo
-            currentMagazineSize -= 1;
-            
+void UFireComponent::ServershootBullet_Implementation()
+{
+	if (projectileClass != NULL) {
+		if (GetWorld() != NULL) {
+
+			//if have no ammo can't fire
+			if (currentMagazineSize <= 0) {
+				UE_LOG(LogTemp, Warning, TEXT("Out of Ammo"));
+				return;
+			}
+
+			//decrement ammo
+			currentMagazineSize -= 1;
+
 			FTransform spawnTransform = GetComponentToWorld();
 
 			//Set Spawn Collision Handling Override
@@ -203,19 +209,20 @@ void UFireComponent::shootBullet() {
 			spawnParams.SpawnCollisionHandlingOverride =
 				ESpawnActorCollisionHandlingMethod::
 				AlwaysSpawn;
-			
-			// spawn the projectile at the muzzle
+
+			//spawn the projectile at the muzzle
 			AProjectile* spawnedProjectile = GetWorld()->
-				SpawnActor<AProjectile>(projectileClass, spawnTransform, 
+				SpawnActor<AProjectile>(projectileClass, spawnTransform,
 					spawnParams);
-			
+
 			spawnedProjectile->projectileDamage = damage;
 
 			// Apply Recoil
 			ASoldier* soldier;
 			try {
-				soldier = ((ASoldier*) GetOwner());
-			} catch(std::bad_cast& bc) {
+				soldier = ((ASoldier*)GetOwner());
+			}
+			catch (std::bad_cast& bc) {
 				bc.what();
 				UE_LOG(LogTemp, Error, TEXT("Attempting to cast non-Soldier to Soldier"));
 				return;
@@ -225,6 +232,11 @@ void UFireComponent::shootBullet() {
 			soldier->AddRecoil(vertical, horizontal);
 		}
 	}
+}
+
+bool UFireComponent::ServershootBullet_Validate()
+{
+	return true;
 }
 
 float UFireComponent::getSecondsPerShot() {
