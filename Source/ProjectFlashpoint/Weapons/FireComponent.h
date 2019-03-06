@@ -15,7 +15,8 @@ UENUM(BlueprintType)
 enum class EWeaponMode: uint8{
     WM_SingleFire     UMETA(DisplayName = "SingleFire"),
     WM_BurstFire      UMETA(DisplayName = "BurstFire"),
-    WM_FullAuto       UMETA(DisplayName = "FullAutomaticFire")
+    WM_FullAuto       UMETA(DisplayName = "FullAutomaticFire"),
+    WM_Shotgun        UMETA(DisplayName = "Shotgun")
 };
 
 UCLASS(Blueprintable, BlueprintType, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -47,6 +48,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
 	float verticalRecoil = .1f;
 
+    // Sets the vertical recoil ratio. 0-1
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
+    float minVerticalRecoil = .0f;
+
 	// Sets the horizontal recoil ratio. 0-1
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
 	float horizontalRecoil = .1f;
@@ -59,6 +64,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
 	int maxMagazineSize = 30;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
+    int pelletsPerShell = 6;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
+    float pelletSpread = 10.f;
+
 	// Sets the weapon to single fire capable
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Fire Mode")
 	bool bSingleFireMode = true;
@@ -70,6 +81,10 @@ public:
 	// Sets the weapon to full auto fire capable
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Fire Mode")
 	bool bFullAutoMode = true;
+
+    // Sets the weapon to use shotgun fire logic
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Fire Mode")
+    bool bShotgunMode = false;
 
 	// Sets the rounds per burst for burst auto capable weapions
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Fire Mode")
@@ -149,10 +164,18 @@ private:
 	/** Controls the single fire logic
 	*/
 	void fireSingle();
+    /** Controls the shotgun fire logic
+    */
+    void fireShotgun();
 
 	/** Fires the bullet 
 	*/
 	void shootBullet();
+    /** Fires shotgun bullet
+    */
+    void shootShotgun();
+
+    void addRecoilToSoldier();
 
 	/** Get the seconds between shots
 	 * @param flaot - seconds between each shot

@@ -16,10 +16,13 @@ void UFireComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	adjustAim();
+    currentMagazineSize = maxMagazineSize;
+    currentAmmoReserves = maxAmmoReserves;
 
 	// Sets priority to Full, Burst, Single on multi fire mode weapons.
-	if(bFullAutoMode) {
+    if(bShotgunMode) {
+        fireMode = EWeaponMode::WM_Shotgun;
+    } else if(bFullAutoMode) {
 		fireMode = EWeaponMode::WM_FullAuto;
 	} else if(bBurstFireMode) {
 		fireMode = EWeaponMode::WM_BurstFire;
@@ -92,6 +95,10 @@ void UFireComponent::OnFire() {
 		canFire = false;
 		fireSingle();
 		break;
+    case EWeaponMode::WM_Shotgun:
+        canFire = false;
+        fireShotgun();
+        break;
 	}
 }
 
@@ -183,6 +190,16 @@ void UFireComponent::fireSingle() {
 		&UFireComponent::canFireAgain, getSecondsPerShot(), false);
 }
 
+void UFireComponent::fireShotgun() {
+    shootShotgun();
+
+    // Unused timer handle
+    FTimerHandle UNUSED;
+    // Call the can fire funciton after a set time
+    GetWorld()->GetTimerManager().SetTimer(UNUSED, this,
+        &UFireComponent::canFireAgain, getSecondsPerShot(), false);
+}
+
 void UFireComponent::shootBullet() {
 	if(projectileClass != NULL) {
 		if(GetWorld() != NULL) {
@@ -211,20 +228,79 @@ void UFireComponent::shootBullet() {
 			
 			spawnedProjectile->projectileDamage = damage;
 
-			// Apply Recoil
-			ASoldier* soldier;
-			try {
-				soldier = ((ASoldier*) GetOwner());
-			} catch(std::bad_cast& bc) {
-				bc.what();
-				UE_LOG(LogTemp, Error, TEXT("Attempting to cast non-Soldier to Soldier"));
-				return;
-			}
-			float vertical = FMath::RandRange(-1.f, 0.f)*verticalRecoil;
-			float horizontal = FMath::RandRange(-1.f, 1.f)*horizontalRecoil;
-			soldier->AddRecoil(vertical, horizontal);
+            addRecoilToSoldier();
 		}
 	}
+}
+
+void UFireComponent::shootShotgun() {
+    if(projectileClass != NULL) {
+        if(GetWorld() != NULL) {
+
+            //if have no ammo can't fire
+            if(currentMagazineSize <= 0) {
+                UE_LOG(LogTemp, Warning, TEXT("Out of Ammo"));
+                return;
+            }
+
+            //decrement ammo
+            currentMagazineSize -= 1;
+
+
+            //Set Spawn Collision Handling Override
+            FActorSpawnParameters spawnParams;
+            spawnParams.SpawnCollisionHandlingOverride =
+                ESpawnActorCollisionHandlingMethod::
+                AlwaysSpawn;
+
+            for(int i = 0; i < pelletsPerShell; i++) {
+
+                FTransform spawnTransform = GetComponentToWorld();
+                // One pellet will always go directly straight
+                if(i != 0) {
+                    float randomPitch = FMath::RandRange(-1.f, 1.f)
+                        *pelletSpread;
+                    float randomYaw = FMath::RandRange(-1.f, 1.f)
+                        *pelletSpread;
+
+                    FRotator newRotation(randomPitch, randomYaw, 0);
+                    FRotator invRotation(-randomPitch, -randomYaw, 0);
+                    AddRelativeRotation(newRotation);
+                    spawnTransform = GetComponentToWorld();
+                    AddRelativeRotation(invRotation);
+                }
+
+                AProjectile* spawnedPellet = GetWorld()->
+                    SpawnActor<AProjectile>(projectileClass, spawnTransform,
+                        spawnParams);
+
+                spawnedPellet->projectileDamage = damage;
+            }
+
+            addRecoilToSoldier();
+        }
+    }
+}
+
+void UFireComponent::addRecoilToSoldier() {
+    // Apply Recoil
+    ASoldier* soldier;
+    try {
+        soldier = ((ASoldier*) GetOwner());
+    } catch(std::bad_cast& bc) {
+        bc.what();
+        UE_LOG(LogTemp, Error, TEXT("Attempting to cast non-Soldier to Soldier"));
+        return;
+    }
+
+    float vertical = 0.0;
+    if(verticalRecoil != 0) {
+        float max = -1.f + minVerticalRecoil / verticalRecoil;
+        vertical = (FMath::RandRange(max, 0.f)*verticalRecoil) 
+            +- minVerticalRecoil;
+    }
+    float horizontal = FMath::RandRange(-1.f, 1.f)*horizontalRecoil;
+    soldier->AddRecoil(vertical, horizontal);
 }
 
 float UFireComponent::getSecondsPerShot() {
