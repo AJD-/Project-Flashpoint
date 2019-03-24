@@ -55,9 +55,14 @@ public:
 		float baseLookUpRate = 45.f;
 
 
-/****************************** Health Properties *******************************/
+/****************************** Name Properties *******************************/
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Info")
 	FString soldierName = "Base Soldier";
+
+/****************************** Health Functions *******************************/
+
+	UFUNCTION(BlueprintCallable, Category = "Health")
+		float takeDamage(float damage);
 
 /****************************** Health Properties *******************************/
 

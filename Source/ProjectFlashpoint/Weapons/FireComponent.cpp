@@ -16,7 +16,7 @@ void UFireComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	adjustAim();
+	//adjustAim();
 
 	// Sets priority to Full, Burst, Single on multi fire mode weapons.
 	if(bFullAutoMode) {
@@ -39,33 +39,33 @@ void UFireComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	}
 }
 
-void UFireComponent::adjustAim() {
-	// Get the Soldiers camera location and rotation.
-	ASoldier* soldier;
-	try {
-		soldier = ((ASoldier*) GetOwner());
-	} catch (std::bad_cast& bc) {
-		bc.what();
-		UE_LOG(LogTemp, Error, TEXT("Attempting to cast non-Soldier to Soldier"));
-		return;
-	}
-
-	FVector viewPointLocationStart = soldier->firstPersonCameraComponent->
-		GetComponentLocation();
-	FRotator viewPointRotation = soldier->firstPersonCameraComponent->
-		GetComponentRotation();
-
-	// Find the end of the view point
-	FVector viewPointLocationEnd = viewPointLocationStart +
-		viewPointRotation.Vector() * soldier->maxEngagementLine;
-
-	// Get direction to shoot in
-	FRotator direction = (viewPointLocationEnd - this->GetComponentLocation())
-		.Rotation();
-
-	// Make this the fire direction
-	this->AddRelativeRotation(direction);
-}
+//void UFireComponent::adjustAim() {
+//	// Get the Soldiers camera location and rotation.
+//	ASoldier* soldier;
+//	try {
+//		soldier = ((ASoldier*) GetOwner());
+//	} catch (std::bad_cast& bc) {
+//		bc.what();
+//		UE_LOG(LogTemp, Error, TEXT("Attempting to cast non-Soldier to Soldier"));
+//		return;
+//	}
+//
+//	FVector viewPointLocationStart = soldier->firstPersonCameraComponent->
+//		GetComponentLocation();
+//	FRotator viewPointRotation = soldier->firstPersonCameraComponent->
+//		GetComponentRotation();
+//
+//	// Find the end of the view point
+//	FVector viewPointLocationEnd = viewPointLocationStart +
+//		viewPointRotation.Vector() * soldier->maxEngagementLine;
+//
+//	// Get direction to shoot in
+//	FRotator direction = (viewPointLocationEnd - this->GetComponentLocation())
+//		.Rotation();
+//
+//	// Make this the fire direction
+//	this->AddRelativeRotation(direction);
+//}
 
 int UFireComponent::getCurrentMagazineSize() const{
     return currentMagazineSize;

@@ -36,6 +36,9 @@ ASoldier::ASoldier() {
 		FVector(-0.5f, -4.4f, -155.7f)
 	);
 	firstPersonMeshComponent->SetRelativeRotation(FRotator(1.9f, -19.19f, 5.2));
+	
+	//SetReplicates(true);
+	//SetReplicateMovement(true);
 }
 
 // Called when the game starts or when spawned
@@ -54,6 +57,14 @@ void ASoldier::Tick(float DeltaTime) {
 
 	AddControllerPitchInput(verticalRecoil);
 	AddControllerYawInput(horizontalRecoil);
+
+	if (!IsLocallyControlled())
+	{
+		FRotator NewRot = firstPersonCameraComponent->RelativeRotation;
+		NewRot.Pitch = RemoteViewPitch * 360.0f / 255.0f;
+		//GetMesh()->SetRelativeRotation(NewRot)
+		firstPersonCameraComponent->SetRelativeRotation(NewRot);
+	}
 }
 
 void ASoldier::AddRecoil(float vertical, float horizontal) {
@@ -209,4 +220,10 @@ void ASoldier::lookUpAtRate(float rate) {
 	AddControllerPitchInput(rate * baseLookUpRate *
 		GetWorld()->GetDeltaSeconds()
 	);
+}
+
+float ASoldier::takeDamage(float damage) {
+	health -= damage;
+	return health;
+
 }

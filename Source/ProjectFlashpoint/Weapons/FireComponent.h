@@ -125,7 +125,7 @@ protected:
 
 	/** Adjusts the aim to the current target view point
 	*/
-	void adjustAim();
+	//void adjustAim();
 
 private:
 	int currentMagazineSize = maxMagazineSize;
