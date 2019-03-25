@@ -2,6 +2,7 @@
 
 #include "Soldier.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "UnrealNetwork.h"
 
 // Sets default values
 ASoldier::ASoldier() {
@@ -20,8 +21,8 @@ ASoldier::ASoldier() {
 	firstPersonCameraComponent->SetupAttachment(GetCapsuleComponent());
 
 	// Position the camera
-	firstPersonCameraComponent->RelativeLocation =
-		FVector(-39.5f, 1.75f, 64.f);
+	firstPersonCameraComponent->RelativeLocation = standPosition;
+
 	firstPersonCameraComponent->bUsePawnControlRotation = true;
 
 	// Create a mesh component that will be used when being viewed from a 
@@ -35,6 +36,7 @@ ASoldier::ASoldier() {
 	firstPersonMeshComponent->SetRelativeLocation(
 		FVector(-0.5f, -4.4f, -155.7f)
 	);
+
 	firstPersonMeshComponent->SetRelativeRotation(FRotator(0.843282f, -8.017015f, 5.056846f));
 }
 
@@ -49,9 +51,25 @@ void ASoldier::BeginPlay() {
 void ASoldier::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);
 
+	switch (actionState) {
+	case ESoldierMovementMode::MM_Walk:
+		firstPersonCameraComponent->RelativeLocation = FMath::VInterpTo(firstPersonCameraComponent->RelativeLocation, standPosition, DeltaTime, 3);
+		break;
+	case ESoldierMovementMode::MM_Jog:
+		firstPersonCameraComponent->RelativeLocation = FMath::VInterpTo(firstPersonCameraComponent->RelativeLocation, standPosition, DeltaTime, 3);
+		break;
+	case ESoldierMovementMode::MM_Crouch:
+		firstPersonCameraComponent->RelativeLocation = FMath::VInterpTo(firstPersonCameraComponent->RelativeLocation, crouchPosition, DeltaTime, 3);
+		break;
+	case ESoldierMovementMode::MM_Prone:
+		firstPersonCameraComponent->RelativeLocation = FMath::VInterpTo(firstPersonCameraComponent->RelativeLocation, pronePosition, DeltaTime, 3);
+		break;
+	case ESoldierMovementMode::MM_Jump:
+		break;
+	}
 	verticalRecoil = FMath::FInterpTo(verticalRecoil, 0, DeltaTime, 10);
 	horizontalRecoil = FMath::FInterpTo(horizontalRecoil, 0, DeltaTime, 10);
-
+	
 	AddControllerPitchInput(verticalRecoil);
 	AddControllerYawInput(horizontalRecoil);
 }
@@ -209,4 +227,12 @@ void ASoldier::lookUpAtRate(float rate) {
 	AddControllerPitchInput(rate * baseLookUpRate *
 		GetWorld()->GetDeltaSeconds()
 	);
+}
+
+void ASoldier::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> &OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ASoldier, firstPersonCameraComponent);
+	DOREPLIFETIME(ASoldier, actionState);
 }
