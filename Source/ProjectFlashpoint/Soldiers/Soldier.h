@@ -41,7 +41,7 @@ public:
 		class USkeletalMeshComponent* firstPersonMeshComponent;
 
 	// First person camera 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta =
+	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta =
 		(AllowPrivateAccess = "true")
 	)
 		class UCameraComponent* firstPersonCameraComponent;
@@ -86,6 +86,8 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty> &OutLifetimeProps) const override;
+
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent*
 		PlayerInputComponent) override;
@@ -97,7 +99,8 @@ public:
 
 	UCharacterMovementComponent* movementComponent;
 
-	ESoldierMovementMode actionState = ESoldierMovementMode::MM_Walk;
+	UPROPERTY(Replicated)
+		ESoldierMovementMode actionState = ESoldierMovementMode::MM_Walk;
 
 	// Sets the base jog for the Soldier
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Movement")
@@ -168,4 +171,12 @@ private:
 
 	float verticalRecoil = 0.f;
 	float horizontalRecoil = 0.f;
+
+	FVector standPosition = FVector(-39.5f, 1.75f, 64.f);
+	FVector crouchPosition = FVector(-39.5f, 1.75f, 20.f);
+	FVector pronePosition = FVector(-39.5f, 1.75f, -54.f);
+
+	float pitch = 0.f;
+	float yaw = 0.f;
+	float roll = 0.f;
 };
