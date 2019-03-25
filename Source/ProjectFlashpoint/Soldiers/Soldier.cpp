@@ -35,7 +35,7 @@ ASoldier::ASoldier() {
 	firstPersonMeshComponent->SetRelativeLocation(
 		FVector(-0.5f, -4.4f, -155.7f)
 	);
-	firstPersonMeshComponent->SetRelativeRotation(FRotator(1.9f, -19.19f, 5.2));
+	firstPersonMeshComponent->SetRelativeRotation(FRotator(0.843282f, -8.017015f, 5.056846f));
 }
 
 // Called when the game starts or when spawned
