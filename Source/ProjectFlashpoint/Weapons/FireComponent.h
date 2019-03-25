@@ -130,6 +130,25 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Input")
 	void OnReload();
 
+    /*
+    UFUNCTION(Categroy = "Spawn")
+    void spawnBullet();
+    virtual void spawnBullet_Implementation();
+    */
+
+    UFUNCTION(Category = "Spawn")
+    void spawnProjectile(FTransform transform);
+
+    UFUNCTION(Reliable, NetMulticast, WithValidation)
+    void spawnProjectileMulticast(FTransform transform);
+    virtual void spawnProjectileMulticast_Implementation(FTransform transform);
+    virtual bool spawnProjectileMulticast_Validate(FTransform transform);
+
+    UFUNCTION(Reliable, Server, WithValidation)
+    void spawnProjectileServer(FTransform transform);
+    virtual void spawnProjectileServer_Implementation(FTransform transform);
+    virtual bool spawnProjectileServer_Validate(FTransform transform);
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -171,6 +190,7 @@ private:
 	/** Fires the bullet 
 	*/
 	void shootBullet();
+
     /** Fires shotgun bullet
     */
     void shootShotgun();

@@ -11,6 +11,8 @@ UFireComponent::UFireComponent()
 }
 
 
+
+
 // Called when the game starts
 void UFireComponent::BeginPlay()
 {
@@ -153,6 +155,41 @@ void UFireComponent::OnReload() {
 	}
 }
 
+void UFireComponent::spawnProjectile(FTransform transform) {
+    //Set Spawn Collision Handling Override
+    FActorSpawnParameters spawnParams;
+    spawnParams.SpawnCollisionHandlingOverride =
+        ESpawnActorCollisionHandlingMethod::
+        AlwaysSpawn;
+
+    // spawn the projectile at the muzzle
+    AProjectile* spawnedProjectile = GetWorld()->
+        SpawnActor<AProjectile>(projectileClass, transform,
+            spawnParams);
+
+    spawnedProjectile->projectileDamage = damage;
+}
+
+void UFireComponent::spawnProjectileMulticast_Implementation(
+    FTransform transform) {
+    spawnProjectile(transform);
+}
+
+bool UFireComponent::spawnProjectileMulticast_Validate(
+    FTransform transform) {
+    return true;
+}
+
+void UFireComponent::spawnProjectileServer_Implementation(
+    FTransform transform) {
+    spawnProjectileMulticast(transform);
+}
+
+bool UFireComponent::spawnProjectileServer_Validate(
+    FTransform transform) {
+    return true;
+}
+
 void UFireComponent::fireBurst() {
 	// If burst still firing
 	if(currentShot < shotsPerBurst) {
@@ -209,24 +246,13 @@ void UFireComponent::shootBullet() {
                 UE_LOG(LogTemp, Warning, TEXT("Out of Ammo"));
                 return;
             }
-            
+
             //decrement ammo
             currentMagazineSize -= 1;
-            
-			FTransform spawnTransform = GetComponentToWorld();
 
-			//Set Spawn Collision Handling Override
-			FActorSpawnParameters spawnParams;
-			spawnParams.SpawnCollisionHandlingOverride =
-				ESpawnActorCollisionHandlingMethod::
-				AlwaysSpawn;
-			
-			// spawn the projectile at the muzzle
-			AProjectile* spawnedProjectile = GetWorld()->
-				SpawnActor<AProjectile>(projectileClass, spawnTransform, 
-					spawnParams);
-			
-			spawnedProjectile->projectileDamage = damage;
+            FTransform transfrom = GetComponentToWorld();
+
+            spawnProjectileServer(transfrom);
 
             addRecoilToSoldier();
 		}
@@ -270,11 +296,8 @@ void UFireComponent::shootShotgun() {
                     AddRelativeRotation(invRotation);
                 }
 
-                AProjectile* spawnedPellet = GetWorld()->
-                    SpawnActor<AProjectile>(projectileClass, spawnTransform,
-                        spawnParams);
 
-                spawnedPellet->projectileDamage = damage;
+                spawnProjectileServer(spawnTransform);
             }
 
             addRecoilToSoldier();
