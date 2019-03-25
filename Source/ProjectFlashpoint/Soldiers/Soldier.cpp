@@ -54,7 +54,7 @@ void ASoldier::Tick(float DeltaTime) {
 	switch (actionState) {
 	case ESoldierMovementMode::MM_Walk:
 		firstPersonCameraComponent->RelativeLocation = FMath::VInterpTo(firstPersonCameraComponent->RelativeLocation, standPosition, DeltaTime, 3);
-		break;
+        break;
 	case ESoldierMovementMode::MM_Jog:
 		firstPersonCameraComponent->RelativeLocation = FMath::VInterpTo(firstPersonCameraComponent->RelativeLocation, standPosition, DeltaTime, 3);
 		break;
@@ -235,4 +235,5 @@ void ASoldier::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> &OutLifetime
 
 	DOREPLIFETIME(ASoldier, firstPersonCameraComponent);
 	DOREPLIFETIME(ASoldier, actionState);
+    DOREPLIFETIME(ASoldier, health);
 }

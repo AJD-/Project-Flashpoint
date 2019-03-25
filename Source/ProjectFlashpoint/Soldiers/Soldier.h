@@ -16,6 +16,7 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "GameFramework/Controller.h"
 #include "GameFramework/Character.h"
+#include "Net/UnrealNetwork.h"
 #include "Math/InterpCurve.h"
 #include "../Weapons/Weapon.h"
 #include "Soldier.generated.h"
@@ -66,7 +67,7 @@ public:
 		float armor = 20.0;
 
 	// Sets the base health for the Solder
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Health")
+	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, Category = "Health")
 		float health = 100.0;
 
 	/****************************** Sight Properties ********************************/
@@ -100,7 +101,7 @@ public:
 	UCharacterMovementComponent* movementComponent;
 
 	UPROPERTY(Replicated)
-		ESoldierMovementMode actionState = ESoldierMovementMode::MM_Walk;
+	ESoldierMovementMode actionState = ESoldierMovementMode::MM_Walk;
 
 	// Sets the base jog for the Soldier
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Movement")
