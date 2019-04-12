@@ -8,6 +8,8 @@ UFireComponent::UFireComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
 
+    PSC = CreateDefaultSubobject<UParticleSystemComponent>
+        (TEXT("Muzzle Flash"));
 }
 
 
@@ -17,6 +19,8 @@ UFireComponent::UFireComponent()
 void UFireComponent::BeginPlay()
 {
 	Super::BeginPlay();
+
+    this->AttachTo(PSC);
 
     currentMagazineSize = maxMagazineSize;
     currentAmmoReserves = maxAmmoReserves;
@@ -168,6 +172,10 @@ void UFireComponent::spawnProjectile(FTransform transform) {
             spawnParams);
 
     spawnedProjectile->projectileDamage = damage;
+
+    if(PSC != NULL) {
+        PSC->Activate(true);
+    }
 }
 
 void UFireComponent::spawnProjectileMulticast_Implementation(
@@ -253,6 +261,11 @@ void UFireComponent::shootBullet() {
             FTransform transfrom = GetComponentToWorld();
 
             spawnProjectileServer(transfrom);
+
+            if(PSC != NULL) {
+ //               UE_LOG(LogTemp, Warning, TEXT("Particle System"));
+ //               PSC->Activate();
+            }
 
             addRecoilToSoldier();
 		}

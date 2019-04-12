@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Engine/World.h"
 #include "Components/SceneComponent.h"
+#include "Particles/ParticleSystemComponent.h"
 #include "TimerManager.h"
 #include "../Projectiles/Projectile.h"
 #include "../Soldiers/Soldier.h"
@@ -97,6 +98,9 @@ public:
 	// Defires the projectile to shoot
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class AProjectile> projectileClass;
+
+    UPROPERTY(EditAnywhere)
+    class UParticleSystemComponent* PSC;
     
 	/** Gets the current magazine size
 	 * @param int - Current magazine size
