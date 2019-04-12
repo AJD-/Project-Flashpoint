@@ -20,7 +20,14 @@ void UFireComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-    this->AttachTo(PSC);
+    FAttachmentTransformRules rules = FAttachmentTransformRules(
+        EAttachmentRule::KeepRelative,
+        EAttachmentRule::KeepRelative,
+        EAttachmentRule::KeepRelative,
+        false
+    );
+
+    PSC->AttachToComponent(this, rules);
 
     currentMagazineSize = maxMagazineSize;
     currentAmmoReserves = maxAmmoReserves;
@@ -50,14 +57,7 @@ void UFireComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 
 void UFireComponent::adjustAim() {
 	// Get the Soldiers camera location and rotation.
-	ASoldier* soldier;
-	try {
-		soldier = ((ASoldier*) GetOwner());
-	} catch (std::bad_cast& bc) {
-		bc.what();
-		UE_LOG(LogTemp, Error, TEXT("Attempting to cast non-Soldier to Soldier"));
-		return;
-	}
+	ASoldier* soldier = ((ASoldier*) GetOwner());
 
 	FVector viewPointLocationStart = soldier->firstPersonCameraComponent->
 		GetComponentLocation();
@@ -262,11 +262,6 @@ void UFireComponent::shootBullet() {
 
             spawnProjectileServer(transfrom);
 
-            if(PSC != NULL) {
- //               UE_LOG(LogTemp, Warning, TEXT("Particle System"));
- //               PSC->Activate();
-            }
-
             addRecoilToSoldier();
 		}
 	}
@@ -320,14 +315,7 @@ void UFireComponent::shootShotgun() {
 
 void UFireComponent::addRecoilToSoldier() {
     // Apply Recoil
-    ASoldier* soldier;
-    try {
-        soldier = ((ASoldier*) GetOwner());
-    } catch(std::bad_cast& bc) {
-        bc.what();
-        UE_LOG(LogTemp, Error, TEXT("Attempting to cast non-Soldier to Soldier"));
-        return;
-    }
+    ASoldier* soldier = ((ASoldier*) GetOwner());
 
     float vertical = 0.0;
     if(verticalRecoil != 0) {
