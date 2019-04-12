@@ -8,6 +8,8 @@ UFireComponent::UFireComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
 
+    PSC = CreateDefaultSubobject<UParticleSystemComponent>
+        (TEXT("Muzzle Flash"));
 }
 
 
@@ -17,6 +19,15 @@ UFireComponent::UFireComponent()
 void UFireComponent::BeginPlay()
 {
 	Super::BeginPlay();
+
+    FAttachmentTransformRules rules = FAttachmentTransformRules(
+        EAttachmentRule::KeepRelative,
+        EAttachmentRule::KeepRelative,
+        EAttachmentRule::KeepRelative,
+        false
+    );
+
+    PSC->AttachToComponent(this, rules);
 
     currentMagazineSize = maxMagazineSize;
     currentAmmoReserves = maxAmmoReserves;
@@ -46,14 +57,7 @@ void UFireComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 
 void UFireComponent::adjustAim() {
 	// Get the Soldiers camera location and rotation.
-	ASoldier* soldier;
-	try {
-		soldier = ((ASoldier*) GetOwner());
-	} catch (std::bad_cast& bc) {
-		bc.what();
-		UE_LOG(LogTemp, Error, TEXT("Attempting to cast non-Soldier to Soldier"));
-		return;
-	}
+	ASoldier* soldier = ((ASoldier*) GetOwner());
 
 	FVector viewPointLocationStart = soldier->firstPersonCameraComponent->
 		GetComponentLocation();
@@ -168,6 +172,10 @@ void UFireComponent::spawnProjectile(FTransform transform) {
             spawnParams);
 
     spawnedProjectile->projectileDamage = damage;
+
+    if(PSC != NULL) {
+        PSC->Activate(true);
+    }
 }
 
 void UFireComponent::spawnProjectileMulticast_Implementation(
@@ -307,14 +315,7 @@ void UFireComponent::shootShotgun() {
 
 void UFireComponent::addRecoilToSoldier() {
     // Apply Recoil
-    ASoldier* soldier;
-    try {
-        soldier = ((ASoldier*) GetOwner());
-    } catch(std::bad_cast& bc) {
-        bc.what();
-        UE_LOG(LogTemp, Error, TEXT("Attempting to cast non-Soldier to Soldier"));
-        return;
-    }
+    ASoldier* soldier = ((ASoldier*) GetOwner());
 
     float vertical = 0.0;
     if(verticalRecoil != 0) {
