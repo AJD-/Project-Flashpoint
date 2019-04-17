@@ -87,6 +87,15 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Fire Mode")
     bool bShotgunMode = false;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Fire Mode")
+    bool bCanFire = true;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Reloading")
+    bool bIsReloading = false;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Reloading")
+    float reloadSpeed = 1.0f;
+
 	// Sets the rounds per burst for burst auto capable weapions
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Fire Mode")
 	int shotsPerBurst = 3;
@@ -153,6 +162,19 @@ public:
     virtual void spawnProjectileServer_Implementation(FTransform transform);
     virtual bool spawnProjectileServer_Validate(FTransform transform);
 
+    UFUNCTION(Category = "Reload")
+    void reloadWeapon();
+
+    UFUNCTION(Reliable, Server, WithValidation)
+    void reloadServer();
+    virtual void reloadServer_Implementation();
+    virtual bool reloadServer_Validate();
+
+    UFUNCTION(Reliable, Client, WithValidation)
+    void reloadClient();
+    virtual void reloadClient_Implementation();
+    virtual bool reloadClient_Validate();
+    
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -170,7 +192,6 @@ private:
 	int currentAmmoReserves = maxAmmoReserves;
 
 	bool burstShooting = false;
-	bool canFire = true;
 
 	float lastShotTime = 0;
 	float nextShotTime = 0;

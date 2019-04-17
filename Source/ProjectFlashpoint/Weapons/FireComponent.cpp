@@ -86,23 +86,23 @@ int UFireComponent::getCurrentAmmoReserves() const {
 
 void UFireComponent::OnFire() {
 	// If already firing
-	if(!canFire) {
+	if(!bCanFire) {
 		return;
 	}
 	switch(fireMode) {
 	case EWeaponMode::WM_BurstFire:
-		canFire = false;
+		bCanFire = false;
 		fireBurst();
 		break;
 	case EWeaponMode::WM_FullAuto:
 		fireFull();
 		break;
 	case EWeaponMode::WM_SingleFire:
-		canFire = false;
+		bCanFire = false;
 		fireSingle();
 		break;
     case EWeaponMode::WM_Shotgun:
-        canFire = false;
+        bCanFire = false;
         fireShotgun();
         break;
 	}
@@ -138,25 +138,10 @@ void UFireComponent::ToggleFireMode() {
 }
 
 void UFireComponent::OnReload() {
+    bIsReloading = true;
+    bCanFire = false;
 
-	//if have no ammo left or the magazine is full, can't reload
-	if(currentAmmoReserves <= 0 || currentMagazineSize >= maxMagazineSize) {
-		UE_LOG(LogTemp, Warning, TEXT("Unable to Reload"));
-		return;
-	}
-
-	//if have less bullets in reserves then the magazine size
-	//fill the magazine with whatever is left
-	if(currentAmmoReserves < (maxMagazineSize - currentMagazineSize)) {
-		currentMagazineSize = currentMagazineSize + currentAmmoReserves;
-		currentAmmoReserves = 0;
-
-	}
-	//fill up magazine with ammo
-	else {
-		currentAmmoReserves -= (maxMagazineSize - currentMagazineSize);
-		currentMagazineSize = maxMagazineSize;
-	}
+    reloadServer();
 }
 
 void UFireComponent::spawnProjectile(FTransform transform) {
@@ -198,6 +183,51 @@ bool UFireComponent::spawnProjectileServer_Validate(
     return true;
 }
 
+void UFireComponent::reloadWeapon() {
+    if(currentAmmoReserves <= 0 || currentMagazineSize >= maxMagazineSize) {
+        UE_LOG(LogTemp, Warning, TEXT("Unable to Reload"));
+        return;
+    }
+
+    //if have less bullets in reserves then the magazine size
+    //fill the magazine with whatever is left
+    if(currentAmmoReserves < (maxMagazineSize - currentMagazineSize)) {
+        currentMagazineSize = currentMagazineSize + currentAmmoReserves;
+        currentAmmoReserves = 0;
+
+    }
+    //fill up magazine with ammo
+    else {
+        currentAmmoReserves -= (maxMagazineSize - currentMagazineSize);
+        currentMagazineSize = maxMagazineSize;
+    }
+
+    bIsReloading = false;
+    bCanFire = true;
+}
+
+
+void UFireComponent::reloadServer_Implementation() {
+    // Unused timer handle
+    FTimerHandle UNUSED;
+
+    GetWorld()->GetTimerManager().SetTimer(UNUSED, this,
+        &UFireComponent::reloadClient, reloadSpeed, false);
+}
+
+bool UFireComponent::reloadServer_Validate() {
+    return true;
+}
+
+void UFireComponent::reloadClient_Implementation() {
+    reloadWeapon();
+}
+
+bool UFireComponent::reloadClient_Validate() {
+    return true;
+}
+
+
 void UFireComponent::fireBurst() {
 	// If burst still firing
 	if(currentShot < shotsPerBurst) {
@@ -212,7 +242,7 @@ void UFireComponent::fireBurst() {
 	// If the burst is over. Reset state
 	} else {
 		burstShooting = false;
-		canFire = true;
+		bCanFire = true;
 		currentShot = 0;
 	}
 }
@@ -333,5 +363,5 @@ float UFireComponent::getSecondsPerShot() {
 }
 
 void UFireComponent::canFireAgain() {
-	canFire = true;
+	bCanFire = true;
 }
