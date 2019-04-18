@@ -37,6 +37,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Location")
 	FVector adsFireLocation;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
+    FString name = "M-16";
+
 	// Sets the damage of each bullet
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
 	float damage = 10.0f;

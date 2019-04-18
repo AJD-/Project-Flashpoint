@@ -10,7 +10,7 @@
 UCLASS(Blueprintable, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class PROJECTFLASHPOINT_API UBaseAbility : public USceneComponent
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
 public:	
 	// Sets default values for this component's properties

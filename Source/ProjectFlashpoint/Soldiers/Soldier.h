@@ -134,7 +134,7 @@ public:
 			5 - jump
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Movement")
-		int getActionState();
+	int getActionState();
 
 	/** Change the action state of the character
 	 * @param NewAction  integer that changes movement state
@@ -145,7 +145,7 @@ public:
 			5 - jump
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Movement")
-		void changeActionState(int newAction);
+	void changeActionState(int newAction);
 
 	/** Handles moving forward / backward */
 	void moveForward(float value);

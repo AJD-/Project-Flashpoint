@@ -24,7 +24,6 @@ void UBaseAbility::TickComponent(float DeltaTime, ELevelTick TickType, FActorCom
 }
 
 void UBaseAbility::executeAbilityMulticast_Implementation() {
-    UE_LOG(LogTemp, Warning, TEXT("Multicast Impl"));
     executeAbility();
 }
 
@@ -33,7 +32,6 @@ bool UBaseAbility::executeAbilityMulticast_Validate() {
 }
 
 void UBaseAbility::executeAbilityServer_Implementation() {
-    UE_LOG(LogTemp, Warning, TEXT("Server Impl"));
     executeAbilityMulticast();
 }
 

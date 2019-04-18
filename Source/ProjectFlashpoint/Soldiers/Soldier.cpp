@@ -56,6 +56,7 @@ void ASoldier::Tick(float DeltaTime) {
 		firstPersonCameraComponent->RelativeLocation = FMath::VInterpTo(firstPersonCameraComponent->RelativeLocation, standPosition, DeltaTime, 3);
         break;
 	case ESoldierMovementMode::MM_Jog:
+        
 		firstPersonCameraComponent->RelativeLocation = FMath::VInterpTo(firstPersonCameraComponent->RelativeLocation, standPosition, DeltaTime, 3);
 		break;
 	case ESoldierMovementMode::MM_Crouch:
@@ -156,6 +157,7 @@ void ASoldier::changeActionState(int newAction)
 			actionState = ESoldierMovementMode::MM_Prone;
 			break;
 		case 5:
+            actionState = ESoldierMovementMode::MM_Jump;
 			break;
 		}
 		break;
@@ -166,6 +168,7 @@ void ASoldier::changeActionState(int newAction)
 			actionState = ESoldierMovementMode::MM_Walk;
 			break;
 		case 5:
+            actionState = ESoldierMovementMode::MM_Jump;
 			break;
 		}
 		break;
@@ -197,6 +200,7 @@ void ASoldier::changeActionState(int newAction)
 		switch (newAction) {
 		case 1:
 			movementComponent->MaxWalkSpeed = walkSpeed;
+            actionState = ESoldierMovementMode::MM_Walk;
 			break;
 		case 2:
 			break;
