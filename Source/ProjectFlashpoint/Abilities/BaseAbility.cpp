@@ -23,16 +23,8 @@ void UBaseAbility::TickComponent(float DeltaTime, ELevelTick TickType, FActorCom
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
 
-void UBaseAbility::executeAbilityMulticast_Implementation() {
-    executeAbility();
-}
-
-bool UBaseAbility::executeAbilityMulticast_Validate() {
-    return true;
-}
-
 void UBaseAbility::executeAbilityServer_Implementation() {
-    executeAbilityMulticast();
+    executeAbility();
 }
 
 bool UBaseAbility::executeAbilityServer_Validate() {

@@ -19,11 +19,6 @@ public:
     UFUNCTION(BlueprintImplementableEvent, Category = "Ability")
     void executeAbility();
 
-    UFUNCTION(Reliable, NetMulticast, WithValidation)
-    void executeAbilityMulticast();
-    virtual void executeAbilityMulticast_Implementation();
-    virtual bool executeAbilityMulticast_Validate();
-
     UFUNCTION(Reliable, Server, WithValidation)
         void executeAbilityServer();
     virtual void executeAbilityServer_Implementation();
