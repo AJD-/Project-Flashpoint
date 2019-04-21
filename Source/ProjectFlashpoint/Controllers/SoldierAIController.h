@@ -24,15 +24,4 @@ private:
 
 	virtual void SetPawn(APawn* InPawn) override;
 
-	virtual void Tick(float DeltaSeconds) override;
-
-	int wait = 0; // temp var
-	int direction = 1;
-	int lastState = 0;
-	float value = 1.0f;
-
-	//UFUNCTION()
-	//	void OnPossedTankDeath();
-	
-	
 };

@@ -148,19 +148,23 @@ public:
 	void changeActionState(int newAction);
 
 	/** Handles moving forward / backward */
+	UFUNCTION(BlueprintCallable, Category = "Movement")
 	void moveForward(float value);
 
 	/** Handles stafing movement, left and right */
+	UFUNCTION(BlueprintCallable, Category = "Movement")
 	void moveRight(float value);
 
 	/** Called via input to turn at a given rate.
 	 * @param Rate	This is a normalized rate
 	 */
+	UFUNCTION(BlueprintCallable, Category = "Movement")
 	void turnAtRate(float rate);
 
 	/** Called via input to turn look up/down at a given rate.
 	 * @param Rate	This is a normalized rate
 	 */
+	UFUNCTION(BlueprintCallable, Category = "Movement")
 	void lookUpAtRate(float rate);
 
 protected:
